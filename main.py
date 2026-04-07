@@ -57,7 +57,7 @@ COMPANIES = {
     'lmlr': 'LMLR', 'luminar': 'LMLR', 'laZR': 'LAZR', 'lazard': 'LAZR', 'gs': 'GS',
     'goldman': 'GS', 'ms': 'MS', 'morgan': 'MS', 'blsk': 'BLSK', 'bluescope': 'BLSK',
     'axp': 'AXP', 'american': 'AXP', 'c': 'C', 'citi': 'C', 'schw': 'SCHW',
-    'charles': 'SCHW', 'ax': 'AX', 'ax', 'trin': 'TRIN', 'spgi': 'SPGI',
+    'charles': 'SCHW', 'ax': 'AX', 'trin': 'TRIN', 'spgi': 'SPGI',
     'spglobal': 'SPGI', 'mktx': 'MKTX', 'market': 'MKTX', 'ice': 'ICE', 'intercont': 'ICE',
     'ndaq': 'NDAQ', 'nasdaq': 'NDAQ', 'ibo': 'IBO', 'ibobot': 'IBO', 'morn': 'MORN',
     'morningstar': 'MORN', 'bfam': 'BFAM', ' pearson': 'PSO', 'hlf': 'HLF',
