@@ -481,27 +481,43 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card">
-            <div class="section-title">PRICE FORECAST (Worst Case Scenarios)</div>
-            <p style="color:#888;margin-bottom:15px;font-size:0.9em;">Based on historical volatility and current trend. These are potential downside targets, not predictions.</p>
+            <div class="section-title">PRICE FORECAST</div>
+            <p style="color:#888;margin-bottom:15px;font-size:0.9em;">Based on volatility and current trend</p>
+            <h4 style="color:#ff4444;margin:15px 0 10px;">Possible Case (Downside)</h4>
             <div class="grid">
                 <div class="stat">
-                    <div class="stat-label">1 Week Worst Case</div>
+                    <div class="stat-label">1 Week</div>
                     <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_1w) if data.worst_1w else 'N/A' }}</div>
                     <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_1w / data.price - 1) * 100) if data.worst_1w else '0' }}%%</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">1 Month Worst Case</div>
+                    <div class="stat-label">1 Month</div>
                     <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_1m) if data.worst_1m else 'N/A' }}</div>
                     <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_1m / data.price - 1) * 100) if data.worst_1m else '0' }}%%</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-label">6 Months Worst Case</div>
+                    <div class="stat-label">6 Months</div>
                     <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_6m) if data.worst_6m else 'N/A' }}</div>
                     <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_6m / data.price - 1) * 100) if data.worst_6m else '0' }}%%</div>
                 </div>
             </div>
-            <div style="margin-top:15px;padding:15px;background:#1a1a25;border-radius:10px;">
-                <p style="color:#888;font-size:0.85em;"><strong style="color:#fff;">Support Levels:</strong> ${{ "%.2f"|format(data.support) if data.support else 'N/A' }} (immediate) | 52W Low: ${{ "%.2f"|format(data.week52_low) if data.week52_low else 'N/A' }}</p>
+            <h4 style="color:#00ff88;margin:15px 0 10px;">Normal Case</h4>
+            <div class="grid">
+                <div class="stat">
+                    <div class="stat-label">1 Week</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_1w) if data.forecast_1w else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#888;">{{ "%.1f"|format((data.forecast_1w / data.price - 1) * 100) if data.forecast_1w else '0' }}%%</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">1 Month</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_1m) if data.forecast_1m else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#888;">{{ "%.1f"|format((data.forecast_1m / data.price - 1) * 100) if data.forecast_1m else '0' }}%%</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">6 Months</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_6m) if data.forecast_6m else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#888;">{{ "%.1f"|format((data.forecast_6m / data.price - 1) * 100) if data.forecast_6m else '0' }}%%</div>
+                </div>
             </div>
         </div>
         
