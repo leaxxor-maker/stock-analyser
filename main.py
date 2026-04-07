@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, request
 import yfinance as yf
 from datetime import datetime
 import sqlite3
