@@ -26,7 +26,7 @@ COMPANIES = {
     'walt': 'WMT', 'walmart': 'WMT', 'pg': 'PG', 'procter': 'PG', 'xom': 'XOM',
     'exxon': 'XOM', 'ma': 'MA', 'mastercard': 'MA', 'hd': 'HD', 'home': 'HD',
     'bac': 'BAC', 'bank': 'BAC', 'abbv': 'ABBV', 'abbvie': 'ABBV', 'pfe': 'PFE',
-    'pfizer': 'PFE', 'kering': 'KER.PA', 'ker': 'KER.PA', 'lvmh': 'MC.PA',
+    'pfizer': 'PFE', 'kering': 'KER.PA', 'ker': 'KER.PA', 'airbus': 'AIR.PA', 'air': 'AIR.PA', 'lvmh': 'MC.PA',
     'mc': 'MC.PA', 'hermes': 'RMS.PA', 'rms': 'RMS.PA', 'danone': 'BN.PA',
     'bn': 'BN.PA', 'total': 'TTE.PA', 'tte': 'TTE.PA', 'sanofi': 'SAN.PA',
     'san': 'SAN.PA', 'orange': 'ORA.PA', 'ora': 'ORA.PA', 'vodafone': 'VOD',
