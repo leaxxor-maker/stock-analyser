@@ -12,7 +12,7 @@ def load_data():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r') as f:
             return json.load(f)
-    return {'analyses': [], 'portfolio': []}
+    return {'analyses': [], 'portfolio': [], 'watchlist': []}
 
 def save_data(data):
     with open(DATA_FILE, 'w') as f:
@@ -350,6 +350,7 @@ HOMEPAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
@@ -406,6 +407,7 @@ ANALYSIS_PAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
@@ -533,7 +535,8 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div style="text-align: center; margin-top: 30px;">
-            <a href="/save/{{ data.ticker }}" style="background: #00d4ff; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;">Save Analysis</a>
+            <a href="/save/{{ data.ticker }}" style="background: #00d4ff; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-right: 10px;">Save Analysis</a>
+            <a href="/add-watchlist/{{ data.ticker }}" style="background: #ffaa00; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;">Add to Watchlist</a>
         </div>
     </div>
 </body>
@@ -574,6 +577,7 @@ SIMPLE_PAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
@@ -740,6 +744,60 @@ def view_saved(analysis_id):
     '''
     return render_template_string(SIMPLE_PAGE, title=f'{analysis["ticker"]} - {analysis["date"]}', content=content)
 
+@app.route('/delete/<int:analysis_id>')
+def delete_analysis(analysis_id):
+    all_data = load_data()
+    all_data['analyses'] = [a for a in all_data['analyses'] if a.get('id') != analysis_id]
+    save_data(all_data)
+    return f'<p style="text-align:center;color:#ff4444;padding:50px;">Analysis deleted!</p><p style="text-align:center;"><a href="/saved" style="color:#00d4ff;">Back to Saved</a></p>'
+
+@app.route('/add-watchlist/<ticker>')
+def add_watchlist(ticker):
+    all_data = load_data()
+    ticker_upper = ticker.upper().strip()
+    if ticker_upper.lower() in COMPANIES:
+        ticker_upper = COMPANIES[ticker_upper.lower()]
+    if not any(w.get('ticker') == ticker_upper for w in all_data['watchlist']):
+        all_data['watchlist'].append({
+            'id': len(all_data['watchlist']) + 1,
+            'ticker': ticker_upper,
+            'date_added': datetime.now().strftime('%Y-%m-%d')
+        })
+        save_data(all_data)
+        return f'<p style="text-align:center;color:#00ff88;padding:50px;background:#0a0a0f;">{ticker_upper} added to your watchlist!</p><p style="text-align:center;"><a href="/my-watchlist" style="color:#00d4ff;">View Watchlist</a></p>'
+    return f'<p style="text-align:center;color:#ffaa00;padding:50px;background:#0a0a0f;">{ticker_upper} is already in your watchlist!</p><p style="text-align:center;"><a href="/my-watchlist" style="color:#00d4ff;">View Watchlist</a></p>'
+
+@app.route('/remove-watchlist/<int:watchlist_id>')
+def remove_watchlist(watchlist_id):
+    all_data = load_data()
+    all_data['watchlist'] = [w for w in all_data['watchlist'] if w.get('id') != watchlist_id]
+    save_data(all_data)
+    return f'<p style="text-align:center;color:#ff4444;padding:50px;background:#0a0a0f;">Removed from watchlist!</p><p style="text-align:center;"><a href="/my-watchlist" style="color:#00d4ff;">Back to Watchlist</a></p>'
+
+@app.route('/my-watchlist')
+def my_watchlist():
+    all_data = load_data()
+    if not all_data['watchlist']:
+        content = '''
+        <div class="card">
+            <h2 style="color:#ffaa00;margin-bottom:20px;">Your Personal Watchlist</h2>
+            <p style="color:#888;text-align:center;">Your watchlist is empty.</p>
+            <p style="color:#888;text-align:center;margin-top:20px;">Search for a stock and click "Add to Watchlist" to add it.</p>
+        </div>
+        '''
+    else:
+        content = '<div class="card"><h2 style="color:#ffaa00;margin-bottom:20px;">Your Personal Watchlist</h2><table><tr><th>#</th><th>Ticker</th><th>Date Added</th><th></th><th></th></tr>'
+        for w in reversed(all_data['watchlist']):
+            content += f'''<tr>
+                <td>{w.get('id', '')}</td>
+                <td><a href="/analyze?ticker={w['ticker']}" style="color:#00d4ff;font-weight:bold;">{w['ticker']}</a></td>
+                <td>{w.get('date_added', '')}</td>
+                <td><a href="/analyze?ticker={w['ticker']}" style="background:#00d4ff;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Analyze</a></td>
+                <td><a href="/remove-watchlist/{w.get('id', '')}" onclick="return confirm('Remove {w['ticker']} from watchlist?')" style="background:#ff4444;color:#fff;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Remove</a></td>
+            </tr>'''
+        content += '</table></div>'
+    return render_template_string(SIMPLE_PAGE, title=f'My Watchlist ({len(all_data["watchlist"])})', content=content)
+
 @app.route('/portfolio')
 def portfolio():
     all_data = load_data()
@@ -846,6 +904,7 @@ STOCKS_HTML = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
             <a href="/stocks">Stocks</a>
