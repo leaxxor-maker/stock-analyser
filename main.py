@@ -611,16 +611,30 @@ def save(ticker):
         data = analyze_stock(ticker)
         if data:
             all_data = load_data()
-            all_data['analyses'].append({
+            analysis = {
+                'id': len(all_data['analyses']) + 1,
                 'ticker': data['ticker'],
-                'date': datetime.now().strftime('%Y-%m-%d'),
+                'name': data['name'],
+                'date': datetime.now().strftime('%Y-%m-%d %H:%M'),
                 'score': data['score'],
                 'price': data['price'],
                 'target_buy': data['target_buy'],
-                'sector': data['sector']
-            })
+                'sector': data['sector'],
+                'pe_ratio': data.get('pe_ratio', 0),
+                'peg': data.get('peg', 0),
+                'roe': data.get('roe', 0),
+                'rev_growth': data.get('rev_growth', 0),
+                'rsi': data.get('rsi', 0),
+                'trend': data.get('trend', 'NEUTRAL'),
+                'support': data.get('support', 0),
+                'resistance': data.get('resistance', 0),
+                'forecast_1w': data.get('forecast_1w', 0),
+                'forecast_1m': data.get('forecast_1m', 0),
+                'forecast_6m': data.get('forecast_6m', 0),
+            }
+            all_data['analyses'].append(analysis)
             save_data(all_data)
-            return f'<p style="text-align:center;color:#00ff88;padding:50px;background:#0a0a0f;color:#fff;">Analysis for {ticker} saved!</p><p style="text-align:center;"><a href="/saved" style="color:#00d4ff;">View Saved</a></p>'
+            return f'<p style="text-align:center;color:#00ff88;padding:50px;background:#0a0a0f;color:#fff;">Analysis for {ticker} saved!</p><p style="text-align:center;"><a href="/saved" style="color:#00d4ff;">View Saved Analyses</a></p>'
         return f'<p style="text-align:center;color:#ff4444;">Could not analyze {ticker}</p>'
     except Exception as e:
         return f'<p style="text-align:center;color:#ff4444;">Error: {str(e)}</p>'
@@ -629,14 +643,102 @@ def save(ticker):
 def saved():
     all_data = load_data()
     if not all_data['analyses']:
-        content = '<p style="text-align:center;color:#888;">No saved analyses yet.</p>'
+        content = '<p style="text-align:center;color:#888;">No saved analyses yet. Analyze a stock and click "Save Analysis" to save it here.</p>'
     else:
-        content = '<table><tr><th>Ticker</th><th>Date</th><th>Score</th><th>Price</th><th>Target</th></tr>'
-        for a in all_data['analyses']:
+        content = '<div style="overflow-x:auto;"><table style="min-width:600px;"><tr><th>#</th><th>Ticker</th><th>Name</th><th>Date</th><th>Score</th><th>Price</th><th>Target</th><th></th></tr>'
+        for a in reversed(all_data['analyses']):
             score_class = 'score-good' if a['score'] >= 7 else 'score-medium' if a['score'] >= 5 else 'score-bad'
-            content += f'<tr><td><a href="/analyze?ticker={a["ticker"]}" style="color:#00d4ff;">{a["ticker"]}</a></td><td>{a["date"]}</td><td class="score {score_class}">{a["score"]:.1f}</td><td>${a["price"]:.2f}</td><td>${a["target_buy"]:.2f}</td></tr>'
-        content += '</table>'
-    return render_template_string(SIMPLE_PAGE, title='Saved Analyses', content=content)
+            content += f'''<tr>
+                <td>{a.get('id', '')}</td>
+                <td style="color:#00d4ff;font-weight:bold;">{a['ticker']}</td>
+                <td style="color:#888;">{a.get('name', a['ticker'])}</td>
+                <td>{a['date']}</td>
+                <td class="score {score_class}">{a['score']:.1f}</td>
+                <td>${a['price']:.2f}</td>
+                <td>${a['target_buy']:.2f}</td>
+                <td><a href="/saved/{a.get('id', a['ticker'])}" style="background:#00d4ff;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">View</a></td>
+            </tr>'''
+        content += '</table></div>'
+    return render_template_string(SIMPLE_PAGE, title=f'Saved Analyses ({len(all_data["analyses"])})', content=content)
+
+@app.route('/saved/<int:analysis_id>')
+def view_saved(analysis_id):
+    all_data = load_data()
+    analysis = next((a for a in all_data['analyses'] if a.get('id') == analysis_id), None)
+    if not analysis:
+        return '<p style="text-align:center;color:#ff4444;">Analysis not found. <a href="/saved" style="color:#00d4ff;">Back to Saved</a></p>'
+    
+    change_1w = ((analysis.get('forecast_1w', 0) / analysis['price'] - 1) * 100) if analysis.get('forecast_1w') else 0
+    change_1m = ((analysis.get('forecast_1m', 0) / analysis['price'] - 1) * 100) if analysis.get('forecast_1m') else 0
+    change_6m = ((analysis.get('forecast_6m', 0) / analysis['price'] - 1) * 100) if analysis.get('forecast_6m') else 0
+    
+    score_class = 'score-good' if analysis['score'] >= 7 else 'score-medium' if analysis['score'] >= 5 else 'score-bad'
+    recommendation = 'STRONG BUY' if analysis['score'] >= 7 else 'HOLD' if analysis['score'] >= 5 else 'AVOID'
+    
+    content = f'''
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+            <div>
+                <div class="ticker" style="color:#00d4ff;font-size:2em;font-weight:bold;">{analysis['ticker']}</div>
+                <div style="color:#888;">{analysis.get('name', analysis['ticker'])} | {analysis.get('sector', 'Unknown')}</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="color:#888;font-size:0.9em;">Saved on {analysis['date']}</div>
+            </div>
+        </div>
+        <div class="score {score_class}" style="font-size:3em;text-align:center;margin:20px 0;">{analysis['score']:.1f}/10</div>
+        <div style="text-align:center;color:#888;">{recommendation}</div>
+    </div>
+    
+    <div class="card">
+        <h3 style="color:#00d4ff;margin-bottom:15px;">Key Metrics (at time of save)</h3>
+        <div class="grid">
+            <div class="stat"><div class="stat-label">Price</div><div class="stat-value">${analysis['price']:.2f}</div></div>
+            <div class="stat"><div class="stat-label">Target Buy</div><div class="stat-value stat-good">${analysis['target_buy']:.2f}</div></div>
+            <div class="stat"><div class="stat-label">P/E</div><div class="stat-value">{analysis.get('pe_ratio', 'N/A')}</div></div>
+            <div class="stat"><div class="stat-label">PEG</div><div class="stat-value">{analysis.get('peg', 'N/A')}</div></div>
+            <div class="stat"><div class="stat-label">ROE</div><div class="stat-value">{analysis.get('roe', 0) * 100:.1f}%</div></div>
+            <div class="stat"><div class="stat-label">Revenue Growth</div><div class="stat-value">{analysis.get('rev_growth', 0) * 100:.1f}%</div></div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 style="color:#00d4ff;margin-bottom:15px;">Technical (at time of save)</h3>
+        <div class="grid">
+            <div class="stat"><div class="stat-label">RSI</div><div class="stat-value">{analysis.get('rsi', 'N/A')}</div></div>
+            <div class="stat"><div class="stat-label">Trend</div><div class="stat-value">{analysis.get('trend', 'NEUTRAL')}</div></div>
+            <div class="stat"><div class="stat-label">Support</div><div class="stat-value">${analysis.get('support', 0):.2f}</div></div>
+            <div class="stat"><div class="stat-label">Resistance</div><div class="stat-value">${analysis.get('resistance', 0):.2f}</div></div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 style="color:#00d4ff;margin-bottom:15px;">Price Forecast (at time of save)</h3>
+        <div class="grid">
+            <div class="stat">
+                <div class="stat-label">1 Week</div>
+                <div class="stat-value">${analysis.get('forecast_1w', 0):.2f}</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_1w > 0 else "#ff4444" if change_1w < 0 else "#888"};">{change_1w:.1f}%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">1 Month</div>
+                <div class="stat-value">${analysis.get('forecast_1m', 0):.2f}</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_1m > 0 else "#ff4444" if change_1m < 0 else "#888"};">{change_1m:.1f}%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">6 Months</div>
+                <div class="stat-value">${analysis.get('forecast_6m', 0):.2f}</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_6m > 0 else "#ff4444" if change_6m < 0 else "#888"};">{change_6m:.1f}%</div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align:center;margin-top:20px;">
+        <a href="/analyze?ticker={analysis['ticker']}" style="background:#00d4ff;color:#000;padding:15px 30px;border-radius:10px;text-decoration:none;font-weight:bold;">See Current Analysis</a>
+        <a href="/saved" style="background:#1a1a25;color:#00d4ff;padding:15px 30px;border-radius:10px;text-decoration:none;margin-left:10px;">Back to Saved</a>
+    </div>
+    '''
+    return render_template_string(SIMPLE_PAGE, title=f'{analysis["ticker"]} - {analysis["date"]}', content=content)
 
 @app.route('/portfolio')
 def portfolio():
