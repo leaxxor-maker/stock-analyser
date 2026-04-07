@@ -489,17 +489,20 @@ ANALYSIS_PAGE = '''
                 <div class="stat">
                     <div class="stat-label">1 Week</div>
                     <div class="stat-value">${{ "%.2f"|format(data.forecast_1w) if data.forecast_1w else 'N/A' }}</div>
-                    <div style="font-size:0.8em;color:#00ff88;">{{ "%.1f"|format((data.forecast_1w / data.price - 1) * 100) if data.forecast_1w else '0' }}%%</div>
+                    {% set change_1w = ((data.forecast_1w / data.price - 1) * 100) if data.forecast_1w else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_1w > 0 else '#ff4444' if change_1w < 0 else '#888' }};">{{ "%.1f"|format(change_1w) }}%%</div>
                 </div>
                 <div class="stat">
                     <div class="stat-label">1 Month</div>
                     <div class="stat-value">${{ "%.2f"|format(data.forecast_1m) if data.forecast_1m else 'N/A' }}</div>
-                    <div style="font-size:0.8em;color:#00ff88;">{{ "%.1f"|format((data.forecast_1m / data.price - 1) * 100) if data.forecast_1m else '0' }}%%</div>
+                    {% set change_1m = ((data.forecast_1m / data.price - 1) * 100) if data.forecast_1m else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_1m > 0 else '#ff4444' if change_1m < 0 else '#888' }};">{{ "%.1f"|format(change_1m) }}%%</div>
                 </div>
                 <div class="stat">
                     <div class="stat-label">6 Months</div>
                     <div class="stat-value">${{ "%.2f"|format(data.forecast_6m) if data.forecast_6m else 'N/A' }}</div>
-                    <div style="font-size:0.8em;color:#00ff88;">{{ "%.1f"|format((data.forecast_6m / data.price - 1) * 100) if data.forecast_6m else '0' }}%%</div>
+                    {% set change_6m = ((data.forecast_6m / data.price - 1) * 100) if data.forecast_6m else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_6m > 0 else '#ff4444' if change_6m < 0 else '#888' }};">{{ "%.1f"|format(change_6m) }}%%</div>
                 </div>
             </div>
         </div>
