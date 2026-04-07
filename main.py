@@ -42,7 +42,7 @@ COMPANIES = {
     'wfc': 'WFC', 'wells': 'WFC', 'csco': 'CSCO', 'cisco': 'CSCO', 'mcd': 'MCD',
     'mcdonald': 'MCD', 'tmo': 'TMO', 'thermo': 'TMO', 'dhr': 'DHR', 'danaher': 'DHR',
     'intc': 'INTC', 'intel': 'INTC', 'amd': 'AMD', 'qs': 'QS', 'quantumscape': 'QS',
-    'pltr': 'PLTR', 'palantir': 'PLTR', 'tsm': 'TSM', 'taiwan': 'TSM', 'nvo': 'NVO',
+    'pltr': 'PLTR', 'palantir': 'PLTR', 'palo alto': 'PANW', 'panw': 'PANW', 'tsm': 'TSM', 'taiwan': 'TSM', 'nvo': 'NVO',
     'novo': 'NVO', 'baba': 'BABA', 'alibaba': 'BABA', 'sbux': 'SBUX', 'starbucks': 'SBUX',
     'nke': 'NKE', 'nike': 'NKE', 'orcl': 'ORCL', 'oracle': 'ORCL', 'crm': 'CRM',
     'salesforce': 'CRM', 'adbe': 'ADBE', 'adobe': 'ADBE', 'pypl': 'PYPL', 'paypal': 'PYPL',
@@ -666,6 +666,7 @@ def watchlist():
         {'ticker': 'RIVN', 'reason': 'EV market share building'},
         {'ticker': 'SMCI', 'reason': 'AI server demand, volatile'},
         {'ticker': 'PALANTIR', 'reason': 'AI momentum'},
+        {'ticker': 'PANW', 'reason': 'Cybersecurity leader, AI security'},
     ]
     
     content = '''
