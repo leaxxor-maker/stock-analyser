@@ -350,6 +350,7 @@ HOMEPAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
         <div class="sources">
@@ -405,6 +406,7 @@ ANALYSIS_PAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
         <div class="card">
@@ -572,6 +574,7 @@ SIMPLE_PAGE = '''
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
+            <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
         {{ content|safe }}
@@ -705,6 +708,96 @@ def watchlist():
     content += '</table></div>'
     
     return render_template_string(SIMPLE_PAGE, title='Watchlist', content=content)
+
+STOCKS_HTML = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stocks Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #00d4ff; margin-bottom: 20px; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav a { padding: 10px 20px; background: #1a1a25; color: #00d4ff; text-decoration: none; border-radius: 25px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        input { padding: 15px 20px; font-size: 18px; border: 2px solid #333; border-radius: 10px; background: #1a1a25; color: #fff; width: 300px; }
+        button { padding: 15px 30px; font-size: 18px; background: #00d4ff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .result { background: #12121a; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        .result-found { border: 2px solid #00ff88; }
+        .result-notfound { border: 2px solid #ff4444; }
+        .ticker-big { font-size: 2em; font-weight: bold; color: #00d4ff; }
+        .result-btn { display: inline-block; background: #00d4ff; color: #000; padding: 10px 20px; border-radius: 10px; text-decoration: none; margin-top: 15px; }
+        .all-stocks { background: #12121a; border-radius: 15px; padding: 25px; margin-top: 30px; }
+        .stock-tag { display: inline-block; background: #1a1a25; padding: 8px 15px; margin: 5px; border-radius: 20px; color: #00d4ff; text-decoration: none; font-size: 0.9em; }
+        .stock-tag:hover { background: #222; }
+        .count { color: #888; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stocks Database</h1>
+        <div class="nav">
+            <a href="/">Home</a>
+            <a href="/portfolio">Portfolio</a>
+            <a href="/saved">Saved Analyses</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/stocks">Stocks</a>
+            <a href="/sources">Sources</a>
+            <a href="/stocks">Stocks</a>
+        </div>
+        <form action="/stocks" method="get" class="search-box">
+            <input type="text" name="q" placeholder="Search ticker or name (ex: apple, AAPL)" value="{{ query }}">
+            <button type="submit">Search</button>
+        </form>
+        {% if result %}
+            <div class="result {% if result.found %}result-found{% else %}result-notfound{% endif %}">
+                {% if result.found %}
+                    <div class="ticker-big">{{ result.ticker }}</div>
+                    <p style="color:#00ff88;margin-top:10px;">Available! Enter this ticker to analyze.</p>
+                    <a href="/analyze?ticker={{ result.ticker }}" class="result-btn">Analyze {{ result.ticker }}</a>
+                {% else %}
+                    <div style="color:#ff4444;font-size:1.5em;">Not in database</div>
+                    <p style="color:#888;margin-top:10px;">Try searching on Yahoo Finance directly.</p>
+                    <a href="https://finance.yahoo.com/quote/{{ query }}" target="_blank" class="result-btn" style="background:#ff4444;">Search on Yahoo Finance</a>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="all-stocks">
+            <div class="count">{{ count }} stocks available</div>
+            <div>
+            {% for ticker in tickers %}
+                <a href="/analyze?ticker={{ ticker }}" class="stock-tag">{{ ticker }}</a>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+'''
+
+@app.route('/stocks')
+def stocks():
+    query = request.args.get('q', '').strip().lower()
+    result = None
+    if query:
+        if query in COMPANIES:
+            result = {'found': True, 'ticker': COMPANIES[query]}
+        elif query.upper() in COMPANIES.values():
+            result = {'found': True, 'ticker': query.upper()}
+        else:
+            result = {'found': False, 'query': query}
+    
+    tickers = sorted(set(COMPANIES.values()))
+    return render_template_string(
+        STOCKS_HTML,
+        query=query,
+        result=result,
+        tickers=tickers,
+        count=len(tickers)
+    )
 
 @app.route('/sources')
 def sources():
