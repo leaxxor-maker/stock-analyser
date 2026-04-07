@@ -688,18 +688,21 @@ def home():
 
 @app.route('/analyze')
 def analyze():
-    ticker = request.args.get('ticker', '').upper().strip()
-    if ticker.lower() in COMPANIES:
-        ticker = COMPANIES[ticker.lower()]
-    if not ticker:
-        return render_template_string(HOMEPAGE)
-    
-    data = analyze_stock(ticker)
-    if not data:
-        return render_template_string(HOMEPAGE + '<p style="text-align:center;color:#ff4444;">Ticker not found or data unavailable</p>')
-    
-    news = get_news_links(ticker)
-    return render_template_string(ANALYSIS_PAGE, data=data, news=news)
+    try:
+        ticker = request.args.get('ticker', '').upper().strip()
+        if not ticker:
+            return render_template_string(HOMEPAGE)
+        if ticker.lower() in COMPANIES:
+            ticker = COMPANIES[ticker.lower()]
+        
+        data = analyze_stock(ticker)
+        if not data:
+            return render_template_string(HOMEPAGE + '<p style="text-align:center;color:#ff4444;">Ticker not found or data unavailable. Try again in a few seconds.</p>')
+        
+        news = get_news_links(ticker)
+        return render_template_string(ANALYSIS_PAGE, data=data, news=news)
+    except Exception as e:
+        return render_template_string(HOMEPAGE + f'<p style="text-align:center;color:#ff4444;">Error: {str(e)}</p>')
 
 @app.route('/save/<ticker>')
 def save(ticker):
