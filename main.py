@@ -209,8 +209,41 @@ def analyze_stock(ticker):
             support, resistance = price * 0.9, price * 1.1
         
         trend = 'UPTREND' if ma50 and ma200 and ma50 > ma200 else 'DOWNTREND' if ma50 and ma200 else 'NEUTRAL'
-    except:
+        
+        daily_returns = prices.pct_change().dropna()
+        volatility = daily_returns.std()
+        avg_return = daily_returns.mean()
+        
+        if beta and beta > 0:
+            market_vol = volatility / 1.1 if beta > 0 else volatility
+        else:
+            market_vol = volatility
+        
+        weekly_vol = volatility * (5 ** 0.5)
+        monthly_vol = volatility * (20 ** 0.5)
+        sixmonth_vol = volatility * ((6 * 20) ** 0.5)
+        
+        if trend == 'DOWNTREND':
+            forecast_1w = price * (1 + avg_return * 5 - weekly_vol * 1.5)
+            forecast_1m = price * (1 + avg_return * 20 - monthly_vol * 1.5)
+            forecast_6m = price * (1 + avg_return * 120 - sixmonth_vol * 1.5)
+        elif trend == 'UPTREND':
+            forecast_1w = price * (1 + avg_return * 5 + weekly_vol * 0.8)
+            forecast_1m = price * (1 + avg_return * 20 + monthly_vol * 0.8)
+            forecast_6m = price * (1 + avg_return * 120 + sixmonth_vol * 0.8)
+        else:
+            forecast_1w = price * (1 - weekly_vol * 1.2)
+            forecast_1m = price * (1 - monthly_vol * 1.2)
+            forecast_6m = price * (1 - sixmonth_vol * 1.2)
+        
+        worst_1w = price * (1 - weekly_vol * 2)
+        worst_1m = price * (1 - monthly_vol * 2)
+        worst_6m = price * (1 - sixmonth_vol * 2)
+        
+    except Exception as e:
         rsi, ma50, ma200, support, resistance, trend = None, None, None, price * 0.9, price * 1.1, 'NEUTRAL'
+        forecast_1w, forecast_1m, forecast_6m = price, price, price
+        worst_1w, worst_1m, worst_6m = price, price, price
 
     scores = {}
     if pe > 0 and pe < 100:
@@ -266,6 +299,8 @@ def analyze_stock(ticker):
         'distance_high': distance_high, 'distance_low': distance_low,
         'rsi': rsi, 'ma50': ma50, 'ma200': ma200, 'support': support, 'resistance': resistance,
         'trend': trend, 'beta': beta, 'div_yield': div_yield,
+        'forecast_1w': forecast_1w, 'forecast_1m': forecast_1m, 'forecast_6m': forecast_6m,
+        'worst_1w': worst_1w, 'worst_1m': worst_1m, 'worst_6m': worst_6m,
     }
 
 def get_news_links(ticker):
@@ -442,6 +477,31 @@ ANALYSIS_PAGE = '''
                 <div class="stat"><div class="stat-label">Support</div><div class="stat-value">${{ "%.2f"|format(data.support) if data.support else 'N/A' }}</div></div>
                 <div class="stat"><div class="stat-label">Resistance</div><div class="stat-value">${{ "%.2f"|format(data.resistance) if data.resistance else 'N/A' }}</div></div>
                 <div class="stat"><div class="stat-label">Trend</div><div class="stat-value {% if data.trend == 'UPTREND' %}stat-good{% elif data.trend == 'DOWNTREND' %}stat-bad{% endif %}">{{ data.trend }}</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">PRICE FORECAST (Worst Case Scenarios)</div>
+            <p style="color:#888;margin-bottom:15px;font-size:0.9em;">Based on historical volatility and current trend. These are potential downside targets, not predictions.</p>
+            <div class="grid">
+                <div class="stat">
+                    <div class="stat-label">1 Week Worst Case</div>
+                    <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_1w) if data.worst_1w else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_1w / data.price - 1) * 100) if data.worst_1w else '0' }}%%</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">1 Month Worst Case</div>
+                    <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_1m) if data.worst_1m else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_1m / data.price - 1) * 100) if data.worst_1m else '0' }}%%</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">6 Months Worst Case</div>
+                    <div class="stat-value stat-bad">${{ "%.2f"|format(data.worst_6m) if data.worst_6m else 'N/A' }}</div>
+                    <div style="font-size:0.8em;color:#ff4444;">{{ "%.1f"|format((data.worst_6m / data.price - 1) * 100) if data.worst_6m else '0' }}%%</div>
+                </div>
+            </div>
+            <div style="margin-top:15px;padding:15px;background:#1a1a25;border-radius:10px;">
+                <p style="color:#888;font-size:0.85em;"><strong style="color:#fff;">Support Levels:</strong> ${{ "%.2f"|format(data.support) if data.support else 'N/A' }} (immediate) | 52W Low: ${{ "%.2f"|format(data.week52_low) if data.week52_low else 'N/A' }}</p>
             </div>
         </div>
         
