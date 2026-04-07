@@ -349,6 +349,7 @@ HOMEPAGE = '''
             <a href="/">Home</a>
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
+            <a href="/watchlist">Watchlist</a>
             <a href="/sources">Sources</a>
         </div>
         <div class="sources">
@@ -403,6 +404,7 @@ ANALYSIS_PAGE = '''
             <a href="/">Home</a>
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
+            <a href="/watchlist">Watchlist</a>
             <a href="/sources">Sources</a>
         </div>
         <div class="card">
@@ -566,6 +568,7 @@ SIMPLE_PAGE = '''
             <a href="/">Home</a>
             <a href="/portfolio">Portfolio</a>
             <a href="/saved">Saved Analyses</a>
+            <a href="/watchlist">Watchlist</a>
             <a href="/sources">Sources</a>
         </div>
         {{ content|safe }}
@@ -640,6 +643,64 @@ def portfolio():
             content += f'<tr><td>{p["ticker"]}</td><td>{p["date"]}</td></tr>'
         content += '</table>'
     return render_template_string(SIMPLE_PAGE, title='Portfolio', content=content)
+
+@app.route('/watchlist')
+def watchlist():
+    buy_now = [
+        {'ticker': 'AAPL', 'reason': 'Strong fundamentals, services growth'},
+        {'ticker': 'MSFT', 'reason': 'Cloud leadership, AI integration'},
+        {'ticker': 'NVDA', 'reason': 'AI chip dominance'},
+        {'ticker': 'GOOGL', 'reason': 'AI & search moat'},
+        {'ticker': 'AMZN', 'reason': 'AWS growth, efficiency'},
+        {'ticker': 'META', 'reason': 'AI boost, buybacks'},
+        {'ticker': 'SAP', 'reason': 'Cloud transition, ERPNOVN.SW'},
+        {'ticker': 'ASML', 'reason': 'EUV monopoly'},
+        {'ticker': 'LVMH', 'reason': 'Luxury resilience'},
+    ]
+    
+    watch_future = [
+        {'ticker': 'TSLA', 'reason': 'Waiting for margin recovery'},
+        {'ticker': 'PLTR', 'reason': 'AI government contracts'},
+        {'ticker': 'SNOW', 'reason': 'High valuation, watch for entry'},
+        {'ticker': 'ARM', 'reason': 'IPO watch, new player'},
+        {'ticker': 'RIVN', 'reason': 'EV market share building'},
+        {'ticker': 'SMCI', 'reason': 'AI server demand, volatile'},
+        {'ticker': 'PALANTIR', 'reason': 'AI momentum'},
+    ]
+    
+    content = '''
+    <div class="card">
+        <h2 style="color:#00ff88;margin-bottom:20px;">Actions Intéressantes (Acheter)</h2>
+        <p style="color:#888;margin-bottom:20px;">Actions avec fondamentaux solides, prêtes à acheter</p>
+        <table>
+            <tr><th>Ticker</th><th>Raison</th><th></th></tr>
+    '''
+    for s in buy_now:
+        content += f'''<tr>
+            <td><a href="/analyze?ticker={s['ticker']}" style="color:#00d4ff;font-weight:bold;">{s['ticker']}</a></td>
+            <td style="color:#ccc;">{s['reason']}</td>
+            <td><a href="/save/{s['ticker']}" style="background:#00d4ff;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Analyser</a></td>
+        </tr>'''
+    
+    content += '''
+        </table>
+    </div>
+    <div class="card">
+        <h2 style="color:#ffaa00;margin-bottom:20px;">Actions à Surveiller (Futur)</h2>
+        <p style="color:#888;margin-bottom:20px;">Actions à regarder pour une entrée future</p>
+        <table>
+            <tr><th>Ticker</th><th>Raison</th><th></th></tr>
+    '''
+    for s in watch_future:
+        content += f'''<tr>
+            <td><a href="/analyze?ticker={s['ticker']}" style="color:#00d4ff;font-weight:bold;">{s['ticker']}</a></td>
+            <td style="color:#ccc;">{s['reason']}</td>
+            <td><a href="/save/{s['ticker']}" style="background:#ffaa00;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Analyser</a></td>
+        </tr>'''
+    
+    content += '</table></div>'
+    
+    return render_template_string(SIMPLE_PAGE, title='Watchlist', content=content)
 
 @app.route('/sources')
 def sources():
