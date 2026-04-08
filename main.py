@@ -802,7 +802,6 @@ ANALYSIS_PAGE = '''
                 <a href="https://finance.yahoo.com/quote/{{ data.ticker }}/news" target="_blank" class="news-link">📰 Actualités Yahoo</a>
                 <a href="https://www.tradingview.com/symbols/{{ data.ticker }}/news/" target="_blank" class="news-link">📊 TradingView News</a>
                 <a href="https://www.investing.com/equities/{{ data.ticker }}-news" target="_blank" class="news-link">📈 Investing.com</a>
-                <a href="https://seekingalpha.com/symbol/{{ data.ticker }}" target="_blank" class="news-link">🔍 Seeking Alpha</a>
             </div>
         </div>
         
