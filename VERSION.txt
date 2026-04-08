@@ -1,0 +1,3 @@
+# Stock Analyzer
+
+Version 4 - Force redeploy
