@@ -466,9 +466,10 @@ HOMEPAGE = '''
             <p>Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
             
             <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
-                <button class="search-btn" onclick="go()">Analyser</button>
+                <form action="/analyze" method="get" style="width:100%;">
+                    <span class="search-icon" style="position:absolute;left:1.25rem;top:50%;transform:translateY(-50%);color:var(--text-muted);z-index:1;">🔍</span>
+                    <input type="text" name="ticker" class="search-input" placeholder="Rechercher une action ou un ETF..." style="width:100%;">
+                </form>
             </div>
             
             <div class="quick-tags">
@@ -634,6 +635,10 @@ ANALYSIS_PAGE = '''
                 {% if data.score >= 7 %}EXCELLENT{% elif data.score >= 5 %}GOOD{% else %}WEAK{% endif %} - 
                 {% if data.score >= 7 %}STRONG BUY{% elif data.score >= 5 %}HOLD{% else %}AVOID{% endif %}
             </div>
+        </div>
+        
+        <div class="card" style="padding: 10px;">
+            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:350px;border-radius:10px;"></iframe>
         </div>
         
         <div class="card">
@@ -1146,7 +1151,6 @@ STOCKS_HTML = '''
             <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
-            <a href="/stocks">Stocks</a>
         </div>
         <form action="/stocks" method="get" class="search-box">
             <input type="text" name="q" placeholder="Search ticker or name (ex: apple, AAPL)" value="{{ query }}">
