@@ -603,14 +603,6 @@ HOMEPAGE = '''
             <div class="stat-card"><div class="stat-value">100%</div><div class="stat-label">Gratuit</div></div>
         </div>
     </div>
-    
-    <script>
-    function go() {
-        var q = document.getElementById('homeSearch').value.trim();
-        if (q) window.location.href = '/analyze?ticker=' + encodeURIComponent(q);
-    }
-    document.getElementById('homeSearch').addEventListener('keypress', function(e) { if (e.key === 'Enter') go(); });
-    </script>
 </body>
 </html>
 '''
@@ -819,7 +811,7 @@ ANALYSIS_PAGE = '''
             <div style="overflow-x:auto;">
             <table style="font-size:0.85rem;">
                 <tr><th>Date</th><th>Ouverture</th><th>Plus Haut</th><th>Plus Bas</th><th>Clôture</th><th>Volume</th></tr>
-            {% for p in price_history[:20] %}
+            {% for p in data.price_history[:20] %}
                 <tr>
                     <td style="color:#888;">{{ p.date }}</td>
                     <td>${{ "%.2f"|format(p.open) }}</td>
@@ -1004,9 +996,24 @@ def view_saved(analysis_id):
                 <div class="ticker" style="color:#00d4ff;font-size:2em;font-weight:bold;">{analysis['ticker']}</div>
                 <div style="color:#888;">{analysis.get('name', analysis['ticker'])} | {analysis.get('sector', 'Unknown')}</div>
             </div>
-            <div style="text-align:right;">
-                <div style="color:#888;font-size:0.9em;">Saved on {analysis['date']}</div>
+            {% if data.price_history %}
+            <div style="overflow-x:auto;">
+            <table style="font-size:0.85rem;">
+                <tr><th>Date</th><th>Ouverture</th><th>Plus Haut</th><th>Plus Bas</th><th>Clôture</th><th>Volume</th></tr>
+            {% for p in data.price_history[:20] %}
+                <tr>
+                    <td style="color:#888;">{{ p.date }}</td>
+                    <td>${{ "%.2f"|format(p.open) }}</td>
+                    <td style="color:#00ff88;">${{ "%.2f"|format(p.high) }}</td>
+                    <td style="color:#ff4444;">${{ "%.2f"|format(p.low) }}</td>
+                    <td>${{ "%.2f"|format(p.close) }}</td>
+                    <td style="color:#888;">{{ "%.0f"|format(p.volume/1e6) }}M</td>
+                </tr>
+            {% endfor %}
+            </table>
             </div>
+            {% endif %}
+        </div>
         </div>
         <div class="score {score_class}" style="font-size:3em;text-align:center;margin:20px 0;">{analysis['score']:.1f}/10</div>
         <div style="text-align:center;color:#888;">{recommendation}</div>
