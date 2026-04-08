@@ -989,6 +989,32 @@ def view_saved(analysis_id):
     score_class = 'score-good' if analysis['score'] >= 7 else 'score-medium' if analysis['score'] >= 5 else 'score-bad'
     recommendation = 'STRONG BUY' if analysis['score'] >= 7 else 'HOLD' if analysis['score'] >= 5 else 'AVOID'
     
+    price_history_html = ''
+    if analysis.get('price_history'):
+        price_history_html = '''
+        <div class="card">
+            <div class="section-title">HISTORIQUE DES PRIX</div>
+            <div style="overflow-x:auto;">
+            <table style="font-size:0.85rem;">
+                <tr><th>Date</th><th>Ouverture</th><th>Plus Haut</th><th>Plus Bas</th><th>Clôture</th><th>Volume</th></tr>
+        '''
+        for p in analysis.get('price_history', [])[:20]:
+            price_history_html += f'''
+                <tr>
+                    <td style="color:#888;">{p.get('date', '')}</td>
+                    <td>${p.get('open', 0):.2f}</td>
+                    <td style="color:#00ff88;">${p.get('high', 0):.2f}</td>
+                    <td style="color:#ff4444;">${p.get('low', 0):.2f}</td>
+                    <td>${p.get('close', 0):.2f}</td>
+                    <td style="color:#888;">{p.get('volume', 0)/1e6:.0f}M</td>
+                </tr>
+            '''
+        price_history_html += '''
+            </table>
+            </div>
+        </div>
+        '''
+    
     content = f'''
     <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
@@ -996,24 +1022,9 @@ def view_saved(analysis_id):
                 <div class="ticker" style="color:#00d4ff;font-size:2em;font-weight:bold;">{analysis['ticker']}</div>
                 <div style="color:#888;">{analysis.get('name', analysis['ticker'])} | {analysis.get('sector', 'Unknown')}</div>
             </div>
-            {% if data.price_history %}
-            <div style="overflow-x:auto;">
-            <table style="font-size:0.85rem;">
-                <tr><th>Date</th><th>Ouverture</th><th>Plus Haut</th><th>Plus Bas</th><th>Clôture</th><th>Volume</th></tr>
-            {% for p in data.price_history[:20] %}
-                <tr>
-                    <td style="color:#888;">{{ p.date }}</td>
-                    <td>${{ "%.2f"|format(p.open) }}</td>
-                    <td style="color:#00ff88;">${{ "%.2f"|format(p.high) }}</td>
-                    <td style="color:#ff4444;">${{ "%.2f"|format(p.low) }}</td>
-                    <td>${{ "%.2f"|format(p.close) }}</td>
-                    <td style="color:#888;">{{ "%.0f"|format(p.volume/1e6) }}M</td>
-                </tr>
-            {% endfor %}
-            </table>
+            <div style="text-align:right;">
+                <div style="color:#888;font-size:0.9em;">Saved on {analysis['date']}</div>
             </div>
-            {% endif %}
-        </div>
         </div>
         <div class="score {score_class}" style="font-size:3em;text-align:center;margin:20px 0;">{analysis['score']:.1f}/10</div>
         <div style="text-align:center;color:#888;">{recommendation}</div>
@@ -1047,20 +1058,22 @@ def view_saved(analysis_id):
             <div class="stat">
                 <div class="stat-label">1 Week</div>
                 <div class="stat-value">${analysis.get('forecast_1w', 0):.2f}</div>
-                <div style="font-size:0.8em;color:{"#00ff88" if change_1w > 0 else "#ff4444" if change_1w < 0 else "#888"};">{change_1w:.1f}%</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_1w > 0 else "#ff4444" if change_1w < 0 else "#888"};>{change_1w:.1f}%</div>
             </div>
             <div class="stat">
                 <div class="stat-label">1 Month</div>
                 <div class="stat-value">${analysis.get('forecast_1m', 0):.2f}</div>
-                <div style="font-size:0.8em;color:{"#00ff88" if change_1m > 0 else "#ff4444" if change_1m < 0 else "#888"};">{change_1m:.1f}%</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_1m > 0 else "#ff4444" if change_1m < 0 else "#888"};>{change_1m:.1f}%</div>
             </div>
             <div class="stat">
                 <div class="stat-label">6 Months</div>
                 <div class="stat-value">${analysis.get('forecast_6m', 0):.2f}</div>
-                <div style="font-size:0.8em;color:{"#00ff88" if change_6m > 0 else "#ff4444" if change_6m < 0 else "#888"};">{change_6m:.1f}%</div>
+                <div style="font-size:0.8em;color:{"#00ff88" if change_6m > 0 else "#ff4444" if change_6m < 0 else "#888"};>{change_6m:.1f}%</div>
             </div>
         </div>
     </div>
+    
+    {price_history_html}
     
     <div style="text-align:center;margin-top:20px;">
         <a href="/analyze?ticker={analysis['ticker']}" style="background:#00d4ff;color:#000;padding:15px 30px;border-radius:10px;text-decoration:none;font-weight:bold;">See Current Analysis</a>
