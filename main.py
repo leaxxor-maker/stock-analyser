@@ -466,12 +466,9 @@ HOMEPAGE = '''
             <p>Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
             
             <div class="search-container">
-                <form action="/analyze" method="get" style="width:100%;display:flex;flex-direction:column;gap:1rem;">
-                    <div style="position:relative;">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" name="ticker" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
-                    </div>
-                    <button type="submit" class="search-btn">Analyser</button>
+                <form action="/analyze" method="get" style="width:100%;">
+                    <span class="search-icon" style="position:absolute;left:1.25rem;top:50%;transform:translateY(-50%);color:var(--text-muted);z-index:1;">🔍</span>
+                    <input type="text" name="ticker" class="search-input" placeholder="Rechercher une action ou un ETF..." style="width:100%;">
                 </form>
             </div>
             
