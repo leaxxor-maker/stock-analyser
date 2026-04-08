@@ -636,10 +636,13 @@ ANALYSIS_PAGE = '''
             </div>
         </div>
         
-        <div class="card">
-            <a href="https://www.tradingview.com/symbols/{{ data.ticker }}/" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;background:linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);color:#000;text-decoration:none;border-radius:12px;font-size:1.1rem;font-weight:600;">
-                📈 Voir le graphique interactif sur TradingView
-            </a>
+        <div class="card" style="padding: 15px; margin-bottom: 1.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                <span style="color:#00d4ff;font-size:1.2rem;font-weight:600;">{{ data.ticker }} - {{ data.name }}</span>
+                <span style="font-size:1.5rem;font-weight:700;color:#00ff88;">${{ "%.2f"|format(data.price) }}</span>
+            </div>
+            <iframe style="width:100%;height:350px;border:none;border-radius:10px;" 
+                src="https://widget.stockanalysis.com/stocks/{{ data.ticker.lower() }}/?theme=dark&hideNav=true&widgets=price-chart"></iframe>
         </div>
         
         <div class="card">
