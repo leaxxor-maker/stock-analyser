@@ -135,6 +135,30 @@ COMPANIES = {
     'at&t': 'T', 'att': 'T', 'tmobile': 'TMUS', 'lumen': 'LUMN', 'lumn': 'LUMN',
     'alphabet': 'GOOGL', 'alphabet': 'GOOGL', 'microsoft': 'MSFT', 'amazon': 'AMZN',
     'nvidia': 'NVDA', 'tsla': 'TSLA', 'meta': 'META', 'apple': 'AAPL',
+    
+    # ETFs - US Market
+    'spy': 'SPY', 'spdr': 'SPY', "s&p 500": 'SPY', 'voo': 'VOO', 'ivv': 'IVV',
+    'vti': 'VTI', 'qqq': 'QQQ', 'qqqm': 'QQQM', 'iwm': 'IWM', 'dia': 'DIA',
+    
+    # ETFs - International
+    'vxus': 'VXUS', 'efa': 'EFA', 'eem': 'EEM', 'vwo': 'VWO',
+    
+    # ETFs - Sectors
+    'xlk': 'XLK', 'xlf': 'XLF', 'xle': 'XLE', 'xlv': 'XLV', 'xly': 'XLY',
+    'xlp': 'XLP', 'xlb': 'XLB', 'xli': 'XLI', 'xlre': 'XLRE', 'xlu': 'XLU',
+    
+    # ETFs - Growth/Value
+    'vug': 'VUG', 'vtv': 'VTV', 'iwf': 'IWD', 'schg': 'SCHG', 'schd': 'SCHD', 'vym': 'VYM',
+    
+    # ETFs - Bonds
+    'bnd': 'BND', 'agg': 'AGG', 'tlt': 'TLT', 'ief': 'IEF', 'lqd': 'LQD', 'hyg': 'HYG',
+    
+    # ETFs - Thematic
+    'arkk': 'ARKK', 'soxx': 'SOXX', 'smh': 'SMH', 'kweb': 'KWEB', 'fxi': 'FXI',
+    'gdx': 'GDX', 'gld': 'GLD', 'slv': 'SLV', 'uso': 'USO', 'ung': 'UNG',
+    
+    # ETFs - Leveraged
+    'tqqq': 'TQQQ', 'sqqq': 'SQQQ', 'spxl': 'SPXL', 'spxs': 'SPXS',
 }
 
 def get_info(ticker):
@@ -315,56 +339,245 @@ HOMEPAGE = '''
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stock Analyzer Pro v2</title>
+    <title>Stock Analyzer Pro v3</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-gold: #ffd700;
+            --accent-orange: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666680;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { color: #00d4ff; text-align: center; margin-bottom: 30px; font-size: 2em; }
-        .search-box { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
-        input { padding: 15px 20px; font-size: 18px; border: 2px solid #333; border-radius: 10px; background: #1a1a25; color: #fff; width: 300px; }
-        button { padding: 15px 30px; font-size: 18px; background: #00d4ff; color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #00b8e6; }
-        .card { background: #12121a; border-radius: 15px; padding: 25px; margin-bottom: 20px; border: 1px solid #222; }
-        .nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-        .nav a { padding: 10px 20px; background: #1a1a25; color: #00d4ff; text-decoration: none; border-radius: 25px; }
-        .nav a:hover { background: #222; }
-        .sources { background: #12121a; border-radius: 15px; padding: 20px; margin-top: 30px; }
-        .sources h3 { color: #00d4ff; margin-bottom: 15px; }
-        .sources ul { list-style: none; padding: 0; }
-        .sources li { padding: 8px 0; border-bottom: 1px solid #222; }
-        .sources a { color: #00ff88; text-decoration: none; }
-        .sources a:hover { text-decoration: underline; }
+        
+        /* Nav */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .logo span:last-child { background: linear-gradient(135deg, #00d4ff, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav { display: flex; gap: 0.5rem; }
+        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
+        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
+        
+        /* Hero */
+        .hero { text-align: center; padding: 4rem 0; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, #fff 0%, #00d4ff 50%, #00ff88 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.2rem; color: #a0a0a0; max-width: 600px; margin: 0 auto 2rem; }
+        
+        /* Search */
+        .search-container { max-width: 600px; margin: 0 auto; position: relative; }
+        .search-input { width: 100%; padding: 1.25rem 1.5rem; padding-left: 3.5rem; border-radius: 16px; border: 2px solid var(--border-color); background: var(--bg-tertiary); color: #fff; font-size: 1.1rem; transition: all 0.3s ease; }
+        .search-input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 30px rgba(0, 212, 255, 0.2); }
+        .search-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.25rem; }
+        .search-btn { display: block; width: 100%; padding: 1rem; margin-top: 1rem; background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a0a0f; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4); }
+        
+        /* Quick Tags */
+        .quick-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1.5rem; }
+        .quick-tag { padding: 0.4rem 0.9rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 20px; color: #a0a0a0; font-size: 0.85rem; text-decoration: none; transition: all 0.25s ease; }
+        .quick-tag:hover { background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); border-color: var(--accent-cyan); }
+        
+        /* Ticker */
+        .market-ticker { display: flex; gap: 2rem; padding: 1rem 1.5rem; background: var(--bg-secondary); border-radius: 12px; margin: 2rem 0; overflow-x: auto; }
+        .ticker-item { display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
+        .ticker-symbol { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #fff; }
+        .ticker-price { font-family: 'JetBrains Mono', monospace; color: #a0a0a0; }
+        .ticker-change { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 500; }
+        .ticker-up { color: var(--accent-green); }
+        .ticker-down { color: #ff4757; }
+        
+        /* Section */
+        .section-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .section-title::before { content: ''; width: 4px; height: 28px; background: linear-gradient(180deg, var(--accent-cyan), var(--accent-green)); border-radius: 2px; }
+        
+        /* Featured News */
+        .featured-news { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .featured-card { position: relative; border-radius: 20px; overflow: hidden; height: 400px; }
+        .featured-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .featured-card:hover .featured-image { transform: scale(1.05); }
+        .featured-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(transparent, rgba(0, 0, 0, 0.9)); }
+        .featured-category { display: inline-block; padding: 0.35rem 0.85rem; background: var(--accent-orange); color: white; font-size: 0.75rem; font-weight: 600; border-radius: 4px; text-transform: uppercase; margin-bottom: 0.75rem; }
+        .featured-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .featured-title a { color: white; text-decoration: none; }
+        .featured-title a:hover { text-decoration: underline; }
+        .featured-meta { color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; }
+        
+        /* News Grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .news-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; transition: all 0.3s ease; }
+        .news-card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 255, 0.3); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4); }
+        .news-image { width: 100%; height: 160px; object-fit: cover; background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); }
+        .news-content { padding: 1.25rem; }
+        .news-category { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 600; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
+        .news-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.4; }
+        .news-title a { color: #fff; text-decoration: none; }
+        .news-title a:hover { color: var(--accent-cyan); }
+        .news-meta { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* Cards */
+        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-tertiary); border-radius: 12px; padding: 1.25rem; text-align: center; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .stat-card:hover { border-color: var(--accent-cyan); }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.25rem; }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+        
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 1rem; }
+            .nav { flex-wrap: wrap; justify-content: center; }
+            .hero h1 { font-size: 2.5rem; }
+            .featured-news { grid-template-columns: 1fr; }
+            .featured-card { height: 300px; }
+            .featured-title { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Stock Analyzer Pro v2</h1>
-        <form action="/analyze" method="get" class="search-box">
-            <input type="text" name="ticker" placeholder="Enter ticker (AAPL, msft...)">
-            <button type="submit">Analyze</button>
-        </form>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">📈</div>
+            <span>Stock Analyzer</span>
+        </a>
         <div class="nav">
-            <a href="/">Home</a>
-            <a href="/portfolio">Portfolio</a>
-            <a href="/saved">Saved Analyses</a>
+            <a href="/" class="active">Accueil</a>
+            <a href="/analyze">Analyser</a>
             <a href="/watchlist">Watchlist</a>
-            <a href="/my-watchlist">My Watchlist</a>
+            <a href="/saved">Analyses</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
         </div>
-        <div class="sources">
-            <h3>Financial Information Sources</h3>
-            <ul>
-                <li><strong>Trading:</strong> <a href="https://www.tradingview.com" target="_blank">TradingView</a>, <a href="https://www.google.com/finance" target="_blank">Google Finance</a>, <a href="https://finance.yahoo.com" target="_blank">Yahoo Finance</a>, <a href="https://www.quiverquant.com" target="_blank">Quiver Quantitative</a></li>
-                <li><strong>Economic Culture:</strong> <a href="https://www.youtube.com/@Finary" target="_blank">Finary (YouTube)</a>, <a href="https://www.lesechos.fr" target="_blank">Les Echos</a></li>
-                <li><strong>Economic Info:</strong> <a href="https://www.ig.com/fr/infos-economiques" target="_blank">IG Infos Economiques</a>, <a href="https://www.ig.com/fr/finance" target="_blank">IG Finance</a>, <a href="https://www.aktionaire.com" target="_blank">L'Aktionnaire</a>, <a href="https://www.bloomberg.com" target="_blank">Bloomberg</a>, <a href="https://www.wsj.com" target="_blank">WSJ</a>, <a href="https://www.ft.com" target="_blank">Financial Times</a></li>
-                <li><strong>News:</strong> <a href="https://www.nytimes.com" target="_blank">NY Times</a>, <a href="https://www.afp.com" target="_blank">AFP</a>, <a href="https://www.reuters.com" target="_blank">Reuters</a>, <a href="https://www.lemonde.fr" target="_blank">Le Monde</a></li>
-                <li><strong>YouTube:</strong> <a href="https://www.youtube.com/@LeDessousDesCartes" target="_blank">Le Dessous des Cartes</a>, <a href="https://www.youtube.com/c/wsj" target="_blank">WSJ</a>, <a href="https://www.youtube.com/c/CNBC" target="_blank">CNBC</a>, <a href="https://www.youtube.com/c/Bloomberg" target="_blank">Bloomberg</a></li>
-            </ul>
+    </nav>
+    
+    <div class="container">
+        <section class="hero">
+            <h1>L'Analyse Boursière, Simplifiée</h1>
+            <p>Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
+            
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
+                <button class="search-btn" onclick="go()">Analyser</button>
+            </div>
+            
+            <div class="quick-tags">
+                <span style="color: var(--text-muted);">Actions:</span>
+                <a href="/analyze?ticker=SPY" class="quick-tag">S&P 500</a>
+                <a href="/analyze?ticker=QQQ" class="quick-tag">NASDAQ</a>
+                <a href="/analyze?ticker=MSFT" class="quick-tag">Microsoft</a>
+                <a href="/analyze?ticker=AAPL" class="quick-tag">Apple</a>
+                <a href="/analyze?ticker=NVDA" class="quick-tag">NVIDIA</a>
+                <a href="/analyze?ticker=TSLA" class="quick-tag">Tesla</a>
+            </div>
+        </section>
+        
+        <div class="market-ticker">
+            <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$502.35</span><span class="ticker-change ticker-up">+1.2%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">QQQ</span><span class="ticker-price">$438.20</span><span class="ticker-change ticker-up">+1.8%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">DIA</span><span class="ticker-price">$398.50</span><span class="ticker-change ticker-up">+0.4%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">VWO</span><span class="ticker-price">$43.25</span><span class="ticker-change ticker-down">-0.3%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">TLT</span><span class="ticker-price">$96.80</span><span class="ticker-change ticker-down">-0.5%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">GLD</span><span class="ticker-price">$189.45</span><span class="ticker-change ticker-up">+0.8%</span></div>
+        </div>
+        
+        <h2 class="section-title">À la une</h2>
+        <div class="featured-news">
+            <article class="featured-card">
+                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80" alt="Bourse" class="featured-image">
+                <div class="featured-overlay">
+                    <span class="featured-category">Marchés</span>
+                    <h3 class="featured-title"><a href="#">Les marchés actions atteignent de nouveaux records historiques</a></h3>
+                    <p class="featured-meta">Il y a 2 heures • Bloomberg</p>
+                </div>
+            </article>
+            <article class="featured-card">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Tech" class="featured-image">
+                <div class="featured-overlay">
+                    <span class="featured-category">Technologie</span>
+                    <h3 class="featured-title"><a href="#">L'IA pousse NVIDIA vers les 900 milliards de capitalisation</a></h3>
+                    <p class="featured-meta">Il y a 4 heures • Reuters</p>
+                </div>
+            </article>
+        </div>
+        
+        <h2 class="section-title">Actualités du jour</h2>
+        <div class="news-grid">
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&q=80" alt="Fed" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Macro</span>
+                    <h3 class="news-title"><a href="#">La Fed maintient ses taux, les marchés positifs</a></h3>
+                    <p class="news-meta">Il y a 1h • Les Echos</p>
+                </div>
+            </article>
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=400&q=80" alt="Crypto" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Crypto</span>
+                    <h3 class="news-title"><a href="#">Bitcoin dépasse les 70 000$ sur fond d'intérêt institutionnel</a></h3>
+                    <p class="news-meta">Il y a 2h • CoinDesk</p>
+                </div>
+            </article>
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80" alt="Energy" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Énergie</span>
+                    <h3 class="news-title"><a href="#">Le brut Brent stable à $85 le baril</a></h3>
+                    <p class="news-meta">Il y a 3h • AFP</p>
+                </div>
+            </article>
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1565514020176-0223a8e73e48?w=400&q=80" alt="Tech" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Technologie</span>
+                    <h3 class="news-title"><a href="#">Apple présente ses nouvelles innovations</a></h3>
+                    <p class="news-meta">Il y a 5h • WSJ</p>
+                </div>
+            </article>
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&q=80" alt="Finance" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Finance</span>
+                    <h3 class="news-title"><a href="#">JPMorgan dépasse les attentes au T1</a></h3>
+                    <p class="news-meta">Il y a 6h • Bloomberg</p>
+                </div>
+            </article>
+            <article class="news-card">
+                <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&q=80" alt="Europe" class="news-image">
+                <div class="news-content">
+                    <span class="news-category">Europe</span>
+                    <h3 class="news-title"><a href="#">Le CAC 40 progresse de 0.8%</a></h3>
+                    <p class="news-meta">Il y a 7h • Le Monde</p>
+                </div>
+            </article>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value">150+</div><div class="stat-label">Actions</div></div>
+            <div class="stat-card"><div class="stat-value">50+</div><div class="stat-label">ETF</div></div>
+            <div class="stat-card"><div class="stat-value">15+</div><div class="stat-label">Métriques</div></div>
+            <div class="stat-card"><div class="stat-value">100%</div><div class="stat-label">Gratuit</div></div>
         </div>
     </div>
+    
+    <script>
+    function go() {
+        var q = document.getElementById('homeSearch').value.trim();
+        if (q) window.location.href = '/analyze?ticker=' + encodeURIComponent(q);
+    }
+    document.getElementById('homeSearch').addEventListener('keypress', function(e) { if (e.key === 'Enter') go(); });
+    </script>
 </body>
 </html>
 '''
@@ -835,7 +1048,33 @@ def watchlist():
         {'ticker': 'PANW', 'reason': 'Cybersecurity leader, AI security'},
     ]
     
+    etf_picks = [
+        {'ticker': 'SPY', 'reason': 'S&P 500 - Diversification passive'},
+        {'ticker': 'QQQ', 'reason': 'NASDAQ 100 - Tech exposure'},
+        {'ticker': 'VOO', 'reason': 'Vanguard S&P 500 - Low fees'},
+        {'ticker': 'VTI', 'reason': 'Total US Market - Broad exposure'},
+        {'ticker': 'GLD', 'reason': 'Gold - Inflation hedge'},
+        {'ticker': 'BND', 'reason': 'Bonds - Stability'},
+        {'ticker': 'SCHD', 'reason': 'Dividends - Income'},
+    ]
+    
     content = '''
+    <div class="card">
+        <h2 style="color:#00ff88;margin-bottom:20px;">Top ETF Picks</h2>
+        <p style="color:#888;margin-bottom:20px;">Les meilleurs ETF pour diversifier votre portefeuille</p>
+        <table>
+            <tr><th>Ticker</th><th>Raison</th><th></th></tr>
+    '''
+    for s in etf_picks:
+        content += f'''<tr>
+            <td><a href="/analyze?ticker={s['ticker']}" style="color:#ffd700;font-weight:bold;">{s['ticker']}</a></td>
+            <td style="color:#ccc;">{s['reason']}</td>
+            <td><a href="/save/{s['ticker']}" style="background:#ffd700;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Analyser</a></td>
+        </tr>'''
+    
+    content += '''
+        </table>
+    </div>
     <div class="card">
         <h2 style="color:#00ff88;margin-bottom:20px;">Actions Intéressantes (Acheter)</h2>
         <p style="color:#888;margin-bottom:20px;">Actions avec fondamentaux solides, prêtes à acheter</p>
