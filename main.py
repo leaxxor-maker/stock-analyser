@@ -452,7 +452,6 @@ HOMEPAGE = '''
         </a>
         <div class="nav">
             <a href="/" class="active">Accueil</a>
-            <a href="/analyze">Analyser</a>
             <a href="/watchlist">Watchlist</a>
             <a href="/saved">Analyses</a>
             <a href="/stocks">Stocks</a>
@@ -638,7 +637,11 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card" style="padding: 10px;">
+            {% if '.' in data.ticker %}
             <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:350px;border-radius:10px;"></iframe>
+            {% else %}
+            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol=NYSE:{{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:350px;border-radius:10px;"></iframe>
+            {% endif %}
         </div>
         
         <div class="card">
