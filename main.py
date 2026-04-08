@@ -636,13 +636,21 @@ ANALYSIS_PAGE = '''
             </div>
         </div>
         
-        <div class="card" style="padding: 15px; margin-bottom: 1.5rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-                <span style="color:#00d4ff;font-size:1.2rem;font-weight:600;">{{ data.ticker }} - {{ data.name }}</span>
-                <span style="font-size:1.5rem;font-weight:700;color:#00ff88;">${{ "%.2f"|format(data.price) }}</span>
+        <div class="card" style="padding: 15px; margin-bottom: 1.5rem; text-align: center;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
+                <div>
+                    <span style="color:#00d4ff;font-size:1.4rem;font-weight:700;">{{ data.ticker }}</span>
+                    <span style="color:#888;margin-left:10px;">{{ data.name }}</span>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:2rem;font-weight:700;color:#00ff88;">${{ "%.2f"|format(data.price) }}</span>
+                    {% if data.pe_ratio %}<span style="color:#888;margin-left:15px;">P/E: {{ "%.1f"|format(data.pe_ratio) }}</span>{% endif %}
+                </div>
             </div>
-            <iframe style="width:100%;height:350px;border:none;border-radius:10px;" 
-                src="https://widget.stockanalysis.com/stocks/{{ data.ticker.lower() }}/?theme=dark&hideNav=true&widgets=price-chart"></iframe>
+            <a href="https://www.tradingview.com/chart/?symbol={{ data.ticker }}" target="_blank" 
+                style="display:inline-block;padding:12px 25px;background:#00d4ff;color:#000;text-decoration:none;border-radius:8px;font-weight:600;">
+                📊 Graphique interactif
+            </a>
         </div>
         
         <div class="card">
