@@ -637,10 +637,11 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
-            <div style="position:relative;padding-top:56.25%;background:#000;">
-                <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark&hide_side_toolbar=false&toolbar_bg=%230a0a0f" 
-                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
-            </div>
+            <a href="https://www.tradingview.com/symbols/{{ data.ticker }}/" target="_blank" style="display:block;background:#12121a;padding:15px;text-align:center;color:#00d4ff;text-decoration:none;border-radius:12px;">
+                📊 Voir le graphique sur TradingView - {{ data.ticker }}
+            </a>
+            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark" 
+                style="width:100%;height:400px;border:none;border-radius:0 0 16px 16px;"></iframe>
         </div>
         
         <div class="card">
