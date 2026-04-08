@@ -666,7 +666,7 @@ ANALYSIS_PAGE = '''
             <h3 style="color:#00d4ff;margin-bottom:15px;">Graphique - {{ data.ticker }}</h3>
             <div style="background:#000;border-radius:10px;overflow:hidden;">
                 <object type="text/html" data="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark&hide_side_toolbar=true&toolbar_bg=0a0a0f" 
-                    style="width:100%;height:450px;border:none;"></object>
+                    style="width:100%;height:600px;border:none;"></object>
             </div>
         </div>
         
