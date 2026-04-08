@@ -637,8 +637,9 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 1.5rem;">
-            <div style="width:100%;height:400px;overflow:hidden;">
-                <iframe src="https://www.tradingview.com/embed/?symbol={{ data.ticker }}&interval=D&theme=dark&style=1" frameborder="0" style="width:100%;height:400px;display:block;"></iframe>
+            <div style="position:relative;padding-top:56.25%;background:#000;">
+                <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark&hide_side_toolbar=false&toolbar_bg=%230a0a0f" 
+                    style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
             </div>
         </div>
         
