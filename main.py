@@ -636,21 +636,30 @@ ANALYSIS_PAGE = '''
             </div>
         </div>
         
-        <div class="card" style="padding: 15px; margin-bottom: 1.5rem; text-align: center;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
-                <div>
-                    <span style="color:#00d4ff;font-size:1.4rem;font-weight:700;">{{ data.ticker }}</span>
-                    <span style="color:#888;margin-left:10px;">{{ data.name }}</span>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:2rem;font-weight:700;color:#00ff88;">${{ "%.2f"|format(data.price) }}</span>
-                    {% if data.pe_ratio %}<span style="color:#888;margin-left:15px;">P/E: {{ "%.1f"|format(data.pe_ratio) }}</span>{% endif %}
-                </div>
+        <div class="card" style="padding: 20px; margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,136,0.05)); border: 1px solid #00d4ff;">
+            <div style="text-align:center;margin-bottom:15px;">
+                <span style="color:#00d4ff;font-size:1rem;text-transform:uppercase;letter-spacing:1px;">Analyse de</span>
+                <div style="font-size:2.5rem;font-weight:700;color:#fff;margin-top:5px;">{{ data.ticker }}</div>
+                <div style="color:#888;">{{ data.name }}</div>
             </div>
-            <a href="https://www.tradingview.com/chart/?symbol={{ data.ticker }}" target="_blank" 
-                style="display:inline-block;padding:12px 25px;background:#00d4ff;color:#000;text-decoration:none;border-radius:8px;font-weight:600;">
-                📊 Graphique interactif
-            </a>
+            <div style="display:flex;justify-content:center;align-items:center;gap:30px;flex-wrap:wrap;">
+                <div style="text-align:center;">
+                    <div style="color:#888;font-size:0.9rem;">Prix</div>
+                    <div style="font-size:2rem;font-weight:700;color:#00ff88;">${{ "%.2f"|format(data.price) }}</div>
+                </div>
+                {% if data.pe_ratio %}
+                <div style="text-align:center;">
+                    <div style="color:#888;font-size:0.9rem;">P/E</div>
+                    <div style="font-size:1.5rem;font-weight:600;color:#fff;">{{ "%.1f"|format(data.pe_ratio) }}</div>
+                </div>
+                {% endif %}
+                {% if data.mcap %}
+                <div style="text-align:center;">
+                    <div style="color:#888;font-size:0.9rem;">Cap.</div>
+                    <div style="font-size:1.5rem;font-weight:600;color:#fff;">${{ "%.1f"|format(data.mcap/1e9) }}B</div>
+                </div>
+                {% endif %}
+            </div>
         </div>
         
         <div class="card">
