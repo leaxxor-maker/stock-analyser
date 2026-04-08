@@ -466,10 +466,9 @@ HOMEPAGE = '''
             <p>Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
             
             <div class="search-container">
-                <form action="/analyze" method="get" style="width:100%;">
-                    <span class="search-icon" style="position:absolute;left:1.25rem;top:50%;transform:translateY(-50%);color:var(--text-muted);z-index:1;">🔍</span>
-                    <input type="text" name="ticker" class="search-input" placeholder="Rechercher une action ou un ETF..." style="width:100%;">
-                </form>
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
+                <button class="search-btn" onclick="go()">Analyser</button>
             </div>
             
             <div class="quick-tags">
@@ -573,6 +572,11 @@ HOMEPAGE = '''
     </div>
     
     <script>
+    function go() {
+        var q = document.getElementById('homeSearch').value.trim();
+        if (q) window.location.href = '/analyze?ticker=' + encodeURIComponent(q);
+    }
+    document.getElementById('homeSearch').addEventListener('keypress', function(e) { if (e.key === 'Enter') go(); });
     </script>
 </body>
 </html>
@@ -584,287 +588,168 @@ ANALYSIS_PAGE = '''
 <head>
     <title>{{ data.ticker }} - Analysis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a25;
-            --accent-cyan: #00d4ff;
-            --accent-green: #00ff88;
-            --accent-gold: #ffd700;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666680;
-            --border-color: rgba(255, 255, 255, 0.08);
-        }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
-        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; border-radius: 0 0 16px 16px; margin-bottom: 2rem; }
-        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
-        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
-        
-        h1 { font-family: 'Playfair Display', serif; color: var(--accent-cyan); margin-bottom: 1.5rem; }
-        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
-        table { width: 100%%; border-collapse: collapse; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { color: var(--accent-cyan); font-weight: 600; }
-        .score { font-weight: bold; }
-        .score-good { color: var(--accent-green); } .score-medium { color: var(--accent-gold); } .score-bad { color: #ff4757; }
-        .sources-list { list-style: none; padding: 0; }
-        .sources-list li { padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
-        .sources-list strong { color: var(--accent-cyan); }
-        .sources-list a { color: var(--accent-green); text-decoration: none; }
-        .sources-list a:hover { text-decoration: underline; }
-        
-        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 1rem; } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .card { background: #12121a; border-radius: 15px; padding: 25px; margin-bottom: 20px; border: 1px solid #222; }
+        .ticker { color: #00d4ff; font-size: 2em; font-weight: bold; }
+        .score { font-size: 4em; font-weight: bold; text-align: center; margin: 20px 0; }
+        .score-good { color: #00ff88; } .score-medium { color: #ffaa00; } .score-bad { color: #ff4444; }
+        .stat { background: #1a1a25; padding: 15px; border-radius: 10px; text-align: center; }
+        .stat-label { color: #666; font-size: 0.85em; margin-bottom: 5px; }
+        .stat-value { font-size: 1.4em; font-weight: bold; color: #fff; }
+        .stat-good { color: #00ff88; } .stat-medium { color: #ffaa00; } .stat-bad { color: #ff4444; }
+        .news-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .news-link { background: #1a1a25; padding: 10px 20px; border-radius: 25px; color: #00d4ff; text-decoration: none; font-size: 0.9em; }
+        .news-link:hover { background: #222; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav a { padding: 10px 20px; background: #1a1a25; color: #00d4ff; text-decoration: none; border-radius: 25px; }
+        .buy-target { background: #00ff88; color: #000; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; font-size: 1.5em; font-weight: bold; }
+        .section-title { color: #00d4ff; margin: 20px 0 10px 0; font-size: 1.2em; }
+        table { width: 100%%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #00d4ff; }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <div class="logo-icon">📈</div>
-            <span>Stock Analyzer</span>
-        </a>
-        <div class="nav">
-            <a href="/">Accueil</a>
-            <a href="/analyze">Analyser</a>
-            <a href="/watchlist">Watchlist</a>
-            <a href="/saved">Analyses</a>
-            <a href="/stocks">Stocks</a>
-        </div>
-    </nav>
-    
     <div class="container">
-        <h1>{{ title }}</h1>
-        {{ content|safe }}
-    </div>
-</body>
-</html>
-'''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ data.ticker }} - Analysis</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a25;
-            --accent-cyan: #00d4ff;
-            --accent-green: #00ff88;
-            --accent-gold: #ffd700;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666680;
-            --border-color: rgba(255, 255, 255, 0.08);
-        }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
-        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; border-radius: 0 0 16px 16px; margin-bottom: 2rem; }
-        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
-        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
-        
-        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
-        .ticker-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-        .ticker-info h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--accent-cyan); }
-        .ticker-name { color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem; }
-        .ticker-sector { display: inline-block; padding: 0.3rem 0.8rem; background: var(--bg-tertiary); border-radius: 20px; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
-        
-        .score-display { text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.05)); border-radius: 16px; border: 1px solid var(--border-color); }
-        .score-value { font-family: 'JetBrains Mono', monospace; font-size: 4rem; font-weight: 700; }
-        .score-good { color: var(--accent-green); }
-        .score-medium { color: var(--accent-gold); }
-        .score-bad { color: #ff4757; }
-        .score-label { font-size: 1rem; color: var(--text-muted); margin-top: 0.5rem; }
-        .recommendation { display: inline-block; padding: 0.5rem 1.5rem; border-radius: 25px; font-weight: 600; margin-top: 1rem; }
-        .rec-buy { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
-        .rec-hold { background: rgba(255, 215, 0, 0.15); color: var(--accent-gold); }
-        .rec-sell { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
-        
-        .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 600; margin: 1.5rem 0 1rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 0.5rem; }
-        .section-title::before { content: ''; width: 4px; height: 24px; background: linear-gradient(180deg, var(--accent-cyan), var(--accent-green)); border-radius: 2px; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-        .stat { background: var(--bg-tertiary); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid var(--border-color); transition: all 0.3s ease; }
-        .stat:hover { border-color: var(--accent-cyan); }
-        .stat-label { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 600; color: var(--text-primary); }
-        .stat-good { color: var(--accent-green); } .stat-medium { color: var(--accent-gold); } .stat-bad { color: #ff4757; }
-        
-        .chart-container { background: var(--bg-tertiary); border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); overflow: hidden; }
-        .chart-container iframe { width: 100%; height: 400px; border: none; }
-        
-        .buy-target { background: linear-gradient(135deg, var(--accent-green), #00cc6a); color: #000; padding: 1.5rem; border-radius: 16px; text-align: center; font-size: 1.5rem; font-weight: 700; margin-top: 1.5rem; }
-        .buy-target .discount { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; font-weight: 500; }
-        
-        .news-links { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
-        .news-link { padding: 0.75rem 1.25rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 25px; color: var(--accent-cyan); text-decoration: none; font-size: 0.9rem; transition: all 0.3s ease; }
-        .news-link:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-cyan); }
-        
-        .action-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 2rem; }
-        .btn { padding: 1rem 2rem; border-radius: 12px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; }
-        .btn-primary { background: linear-gradient(135deg, var(--accent-cyan), #0099cc); color: var(--bg-primary); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4); }
-        .btn-secondary { background: var(--bg-tertiary); color: var(--accent-gold); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: rgba(255, 215, 0, 0.1); border-color: var(--accent-gold); }
-        
-        @media (max-width: 768px) {
-            .navbar { flex-direction: column; gap: 1rem; }
-            .ticker-info h1 { font-size: 1.8rem; }
-            .score-value { font-size: 3rem; }
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-pattern"></div>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <div class="logo-icon">📈</div>
-            <span>Stock Analyzer</span>
-        </a>
         <div class="nav">
-            <a href="/">Accueil</a>
-            <a href="/analyze">Analyser</a>
+            <a href="/">Home</a>
+            <a href="/portfolio">Portfolio</a>
+            <a href="/saved">Saved Analyses</a>
             <a href="/watchlist">Watchlist</a>
-            <a href="/saved">Analyses</a>
+            <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
+            <a href="/sources">Sources</a>
         </div>
-    </nav>
-    
-    <div class="container">
         <div class="card">
-            <div class="ticker-header">
-                <div class="ticker-info">
-                    <h1>{{ data.ticker }}</h1>
-                    <div class="ticker-name">{{ data.name }}</div>
-                    <span class="ticker-sector">{{ data.sector }} | {{ data.industry }}</span>
-                </div>
+            <div class="ticker">{{ data.ticker }}</div>
+            <div class="name">{{ data.name }} | {{ data.sector }} | {{ data.industry }}</div>
+            <div class="score {% if data.score >= 7 %}score-good{% elif data.score >= 5 %}score-medium{% else %}score-bad{% endif %}">
+                {{ "%.1f"|format(data.score) }}/10
             </div>
-            
-            <div class="score-display">
-                <div class="score-value {% if data.score >= 7 %}score-good{% elif data.score >= 5 %}score-medium{% else %}score-bad{% endif %}">
-                    {{ "%.1f"|format(data.score) }}/10
-                </div>
-                <div class="score-label">
-                    {% if data.score >= 7 %}EXCELLENT{% elif data.score >= 5 %}GOOD{% else %}WEAK{% endif %}
-                </div>
-                <div class="recommendation {% if data.score >= 7 %}rec-buy{% elif data.score >= 5 %}rec-hold{% else %}rec-sell{% endif %}">
-                    {% if data.score >= 7 %}STRONG BUY{% elif data.score >= 5 %}HOLD{% else %}AVOID{% endif %}
-                </div>
+            <div style="text-align: center; color: #888;">
+                {% if data.score >= 7 %}EXCELLENT{% elif data.score >= 5 %}GOOD{% else %}WEAK{% endif %} - 
+                {% if data.score >= 7 %}STRONG BUY{% elif data.score >= 5 %}HOLD{% else %}AVOID{% endif %}
             </div>
         </div>
         
-        <div class="chart-container">
-            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0"></iframe>
-        </div>
-        
-        <h2 class="section-title">Prix & Valorisation</h2>
-        <div class="grid">
-            <div class="stat"><div class="stat-label">Prix</div><div class="stat-value">${{ "%.2f"|format(data.price) }}</div></div>
-            <div class="stat"><div class="stat-label">P/E</div><div class="stat-value {% if data.pe_ratio < 25 %}stat-good{% elif data.pe_ratio < 40 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.pe_ratio) if data.pe_ratio else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">Forward P/E</div><div class="stat-value {% if data.fwd_pe < 20 %}stat-good{% elif data.fwd_pe < 35 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.fwd_pe) if data.fwd_pe else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">PEG</div><div class="stat-value {% if data.peg < 1.5 %}stat-good{% elif data.peg < 3 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.2f"|format(data.peg) if data.peg else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">P/B</div><div class="stat-value {% if data.pb < 5 %}stat-good{% elif data.pb < 10 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.pb) if data.pb else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">P/S</div><div class="stat-value {% if data.ps < 5 %}stat-good{% elif data.ps < 10 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.ps) if data.ps else 'N/A' }}</div></div>
-        </div>
-        
-        <h2 class="section-title">Rentabilité</h2>
-        <div class="grid">
-            <div class="stat"><div class="stat-label">ROE</div><div class="stat-value {% if data.roe > 0.15 %}stat-good{% elif data.roe > 0.08 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roe * 100) if data.roe else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">ROA</div><div class="stat-value {% if data.roa > 0.05 %}stat-good{% elif data.roa > 0.02 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roa * 100) if data.roa else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">ROIC</div><div class="stat-value {% if data.roic > 15 %}stat-good{% elif data.roic > 8 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roic) if data.roic else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">Marge Nette</div><div class="stat-value {% if data.mg > 0.15 %}stat-good{% elif data.mg > 0.05 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.mg * 100) if data.mg else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">Marge Op.</div><div class="stat-value {% if data.om > 0.15 %}stat-good{% elif data.om > 0.08 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.om * 100) if data.om else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">Marge brute</div><div class="stat-value {% if data.gm > 0.30 %}stat-good{% elif data.gm > 0.20 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.gm * 100) if data.gm else 'N/A' }}%</div></div>
-        </div>
-        
-        <h2 class="section-title">Croissance</h2>
-        <div class="grid">
-            <div class="stat"><div class="stat-label">Croissance Revenus</div><div class="stat-value {% if data.rev_growth > 0.10 %}stat-good{% elif data.rev_growth > 0 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.rev_growth * 100) if data.rev_growth else 'N/A' }}%</div></div>
-            <div class="stat"><div class="stat-label">Croissance Bénéfices</div><div class="stat-value {% if data.earn_growth > 0.10 %}stat-good{% elif data.earn_growth > 0 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.earn_growth * 100) if data.earn_growth else 'N/A' }}%</div></div>
-        </div>
-        
-        <h2 class="section-title">Technique</h2>
-        <div class="grid">
-            <div class="stat"><div class="stat-label">RSI</div><div class="stat-value {% if data.rsi and data.rsi < 30 %}stat-good{% elif data.rsi and data.rsi > 70 %}stat-bad{% endif %}">{{ "%.1f"|format(data.rsi) if data.rsi else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">MA50</div><div class="stat-value">${{ "%.2f"|format(data.ma50) if data.ma50 else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">MA200</div><div class="stat-value">${{ "%.2f"|format(data.ma200) if data.ma200 else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">Support</div><div class="stat-value">${{ "%.2f"|format(data.support) if data.support else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">Résistance</div><div class="stat-value">${{ "%.2f"|format(data.resistance) if data.resistance else 'N/A' }}</div></div>
-            <div class="stat"><div class="stat-label">Tendance</div><div class="stat-value {% if data.trend == 'UPTREND' %}stat-good{% elif data.trend == 'DOWNTREND' %}stat-bad{% endif %}">{{ data.trend }}</div></div>
-        </div>
-        
-        <h2 class="section-title">Prévisions de prix</h2>
-        <div class="grid">
-            {% set change_1w = ((data.forecast_1w / data.price - 1) * 100) if data.forecast_1w else 0 %}
-            {% set change_1m = ((data.forecast_1m / data.price - 1) * 100) if data.forecast_1m else 0 %}
-            {% set change_6m = ((data.forecast_6m / data.price - 1) * 100) if data.forecast_6m else 0 %}
-            <div class="stat">
-                <div class="stat-label">1 Semaine</div>
-                <div class="stat-value">${{ "%.2f"|format(data.forecast_1w) if data.forecast_1w else 'N/A' }}</div>
-                <div class="stat-value {% if change_1w > 0 %}stat-good{% elif change_1w < 0 %}stat-bad{% endif %}" style="font-size:1rem;">{{ "%.1f"|format(change_1w) }}%</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">1 Mois</div>
-                <div class="stat-value">${{ "%.2f"|format(data.forecast_1m) if data.forecast_1m else 'N/A' }}</div>
-                <div class="stat-value {% if change_1m > 0 %}stat-good{% elif change_1m < 0 %}stat-bad{% endif %}" style="font-size:1rem;">{{ "%.1f"|format(change_1m) }}%</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label">6 Mois</div>
-                <div class="stat-value">${{ "%.2f"|format(data.forecast_6m) if data.forecast_6m else 'N/A' }}</div>
-                <div class="stat-value {% if change_6m > 0 %}stat-good{% elif change_6m < 0 %}stat-bad{% endif %}" style="font-size:1rem;">{{ "%.1f"|format(change_6m) }}%</div>
+        <div class="card">
+            <div class="section-title">PRICE & VALUATION</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">Price</div><div class="stat-value">${{ "%.2f"|format(data.price) }}</div></div>
+                <div class="stat"><div class="stat-label">P/E</div><div class="stat-value {% if data.pe_ratio < 25 %}stat-good{% elif data.pe_ratio < 40 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.pe_ratio) if data.pe_ratio else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Forward P/E</div><div class="stat-value {% if data.fwd_pe < 20 %}stat-good{% elif data.fwd_pe < 35 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.fwd_pe) if data.fwd_pe else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">PEG</div><div class="stat-value {% if data.peg < 1.5 %}stat-good{% elif data.peg < 3 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.2f"|format(data.peg) if data.peg else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">P/B</div><div class="stat-value {% if data.pb < 5 %}stat-good{% elif data.pb < 10 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.pb) if data.pb else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">P/S</div><div class="stat-value {% if data.ps < 5 %}stat-good{% elif data.ps < 10 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.ps) if data.ps else 'N/A' }}</div></div>
             </div>
         </div>
         
-        <div class="buy-target">
-            Prix d'achat cible: ${{ "%.2f"|format(data.target_buy) }}
-            <div class="discount">({{ "%.0f"|format((data.target_buy / data.price - 1) * 100) }}% de remise)</div>
+        <div class="card">
+            <div class="section-title">PROFITABILITY</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">ROE</div><div class="stat-value {% if data.roe > 0.15 %}stat-good{% elif data.roe > 0.08 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roe * 100) if data.roe else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">ROA</div><div class="stat-value {% if data.roa > 0.05 %}stat-good{% elif data.roa > 0.02 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roa * 100) if data.roa else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">ROIC</div><div class="stat-value {% if data.roic > 15 %}stat-good{% elif data.roic > 8 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.roic) if data.roic else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">Profit Margin</div><div class="stat-value {% if data.mg > 0.15 %}stat-good{% elif data.mg > 0.05 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.mg * 100) if data.mg else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">Op Margin</div><div class="stat-value {% if data.om > 0.15 %}stat-good{% elif data.om > 0.08 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.om * 100) if data.om else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">Gross Margin</div><div class="stat-value {% if data.gm > 0.30 %}stat-good{% elif data.gm > 0.20 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.gm * 100) if data.gm else 'N/A' }}%</div></div>
+            </div>
         </div>
         
-        <div class="card" style="margin-top: 1.5rem;">
-            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-                <div>
-                    <div class="stat-label">Market Cap</div>
-                    <div class="stat-value">${{ "%.2f"|format(data.mcap / 1e12) if data.mcap else 0 }}T</div>
+        <div class="card">
+            <div class="section-title">GROWTH</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">Revenue Growth</div><div class="stat-value {% if data.rev_growth > 0.10 %}stat-good{% elif data.rev_growth > 0 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.rev_growth * 100) if data.rev_growth else 'N/A' }}%</div></div>
+                <div class="stat"><div class="stat-label">Earnings Growth</div><div class="stat-value {% if data.earn_growth > 0.10 %}stat-good{% elif data.earn_growth > 0 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.earn_growth * 100) if data.earn_growth else 'N/A' }}%</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">SOLVENCY</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">D/E</div><div class="stat-value {% if data.de < 1 %}stat-good{% elif data.de < 2 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.1f"|format(data.de) if data.de else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Current Ratio</div><div class="stat-value {% if data.rc > 1.5 %}stat-good{% elif data.rc > 1 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.2f"|format(data.rc) if data.rc else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Cash Ratio</div><div class="stat-value {% if data.cr > 0.5 %}stat-good{% elif data.cr > 0.2 %}stat-medium{% else %}stat-bad{% endif %}">{{ "%.2f"|format(data.cr) if data.cr else 'N/A' }}</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">CASH FLOW</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">FCF</div><div class="stat-value {% if data.fcf > 0 %}stat-good{% else %}stat-bad{% endif %}">${{ "%.0f"|format(data.fcf / 1e9) if data.fcf else 0 }}B</div></div>
+                <div class="stat"><div class="stat-label">OCF</div><div class="stat-value {% if data.ocf > 0 %}stat-good{% else %}stat-bad{% endif %}">${{ "%.0f"|format(data.ocf / 1e9) if data.ocf else 0 }}B</div></div>
+                <div class="stat"><div class="stat-label">Cash</div><div class="stat-value">${{ "%.0f"|format(data.total_cash / 1e9) if data.total_cash else 0 }}B</div></div>
+                <div class="stat"><div class="stat-label">Debt</div><div class="stat-value">${{ "%.0f"|format(data.total_debt / 1e9) if data.total_debt else 0 }}B</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">TECHNICAL</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">RSI</div><div class="stat-value {% if data.rsi and data.rsi < 30 %}stat-good{% elif data.rsi and data.rsi > 70 %}stat-bad{% endif %}">{{ "%.1f"|format(data.rsi) if data.rsi else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">MA50</div><div class="stat-value">${{ "%.2f"|format(data.ma50) if data.ma50 else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">MA200</div><div class="stat-value">${{ "%.2f"|format(data.ma200) if data.ma200 else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Support</div><div class="stat-value">${{ "%.2f"|format(data.support) if data.support else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Resistance</div><div class="stat-value">${{ "%.2f"|format(data.resistance) if data.resistance else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Trend</div><div class="stat-value {% if data.trend == 'UPTREND' %}stat-good{% elif data.trend == 'DOWNTREND' %}stat-bad{% endif %}">{{ data.trend }}</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">PRICE FORECAST (Normal Case)</div>
+            <p style="color:#888;margin-bottom:15px;font-size:0.9em;">Based on volatility and current trend</p>
+            <div class="grid">
+                <div class="stat">
+                    <div class="stat-label">1 Week</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_1w) if data.forecast_1w else 'N/A' }}</div>
+                    {% set change_1w = ((data.forecast_1w / data.price - 1) * 100) if data.forecast_1w else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_1w > 0 else '#ff4444' if change_1w < 0 else '#888' }};">{{ "%.1f"|format(change_1w) }}%%</div>
                 </div>
-                <div>
-                    <div class="stat-label">BETA</div>
-                    <div class="stat-value">{{ "%.2f"|format(data.beta) if data.beta else 'N/A' }}</div>
+                <div class="stat">
+                    <div class="stat-label">1 Month</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_1m) if data.forecast_1m else 'N/A' }}</div>
+                    {% set change_1m = ((data.forecast_1m / data.price - 1) * 100) if data.forecast_1m else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_1m > 0 else '#ff4444' if change_1m < 0 else '#888' }};">{{ "%.1f"|format(change_1m) }}%%</div>
                 </div>
-                <div>
-                    <div class="stat-label">Dividende</div>
-                    <div class="stat-value">{{ "%.2f"|format(data.div_yield * 100) if data.div_yield else 0 }}%</div>
+                <div class="stat">
+                    <div class="stat-label">6 Months</div>
+                    <div class="stat-value">${{ "%.2f"|format(data.forecast_6m) if data.forecast_6m else 'N/A' }}</div>
+                    {% set change_6m = ((data.forecast_6m / data.price - 1) * 100) if data.forecast_6m else 0 %}
+                    <div style="font-size:0.8em;color:{{ '#00ff88' if change_6m > 0 else '#ff4444' if change_6m < 0 else '#888' }};">{{ "%.1f"|format(change_6m) }}%%</div>
                 </div>
             </div>
         </div>
         
-        <h2 class="section-title">Liens & Info</h2>
-        <div class="news-links">
-            <a href="{{ news.tradingview }}" target="_blank" class="news-link">📊 TradingView</a>
-            <a href="{{ news.google }}" target="_blank" class="news-link">🔍 Google Finance</a>
-            <a href="{{ news.yahoo }}" target="_blank" class="news-link">📈 Yahoo Finance</a>
-            <a href="{{ news.quiver }}" target="_blank" class="news-link">📉 Quiver Quantitative</a>
+        <div class="card">
+            <div class="section-title">BUY TARGET</div>
+            <div class="buy-target">
+                Target Buy Price: ${{ "%.2f"|format(data.target_buy) }}
+                <div style="font-size: 0.6em; margin-top: 10px; color: #888;">
+                    ({{ "%.0f"|format((data.target_buy / data.price - 1) * 100) }}%% discount)
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding: 20px; background: #1a1a25; border-radius: 10px;">
+                <p>Market Cap: ${{ "%.0f"|format(data.mcap / 1e12) if data.mcap else 0 }}T | BETA: {{ "%.2f"|format(data.beta) if data.beta else 'N/A' }} | Dividend: {{ "%.2f"|format(data.div_yield * 100) if data.div_yield else 0 }}%%</p>
+            </div>
         </div>
         
-        <div class="action-buttons">
-            <a href="/save/{{ data.ticker }}" class="btn btn-primary">Sauvegarder</a>
-            <a href="/add-watchlist/{{ data.ticker }}" class="btn btn-secondary">Ajouter à la watchlist</a>
+        <div class="card">
+            <div class="section-title">NEWS & INFO</div>
+            <div class="news-links">
+                <a href="{{ news.tradingview }}" target="_blank" class="news-link">TradingView</a>
+                <a href="{{ news.google }}" target="_blank" class="news-link">Google Finance</a>
+                <a href="{{ news.yahoo }}" target="_blank" class="news-link">Yahoo Finance</a>
+                <a href="{{ news.quiver }}" target="_blank" class="news-link">Quiver Quantitative</a>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/save/{{ data.ticker }}" style="background: #00d4ff; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-right: 10px;">Save Analysis</a>
+            <a href="/add-watchlist/{{ data.ticker }}" style="background: #ffaa00; color: #000; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;">Add to Watchlist</a>
         </div>
     </div>
 </body>
@@ -877,66 +762,38 @@ SIMPLE_PAGE = '''
 <head>
     <title>{{ title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a25;
-            --accent-cyan: #00d4ff;
-            --accent-green: #00ff88;
-            --accent-gold: #ffd700;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666680;
-            --border-color: rgba(255, 255, 255, 0.08);
-        }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
-        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; border-radius: 0 0 16px 16px; margin-bottom: 2rem; }
-        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
-        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
-        
-        h1 { font-family: 'Playfair Display', serif; color: var(--accent-cyan); margin-bottom: 1.5rem; }
-        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        h1 { color: #00d4ff; margin-bottom: 20px; }
+        .nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .nav a { padding: 10px 20px; background: #1a1a25; color: #00d4ff; text-decoration: none; border-radius: 25px; }
         table { width: 100%%; border-collapse: collapse; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { color: var(--accent-cyan); font-weight: 600; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #00d4ff; }
         .score { font-weight: bold; }
-        .score-good { color: var(--accent-green); } .score-medium { color: var(--accent-gold); } .score-bad { color: #ff4757; }
+        .score-good { color: #00ff88; } .score-medium { color: #ffaa00; } .score-bad { color: #ff4444; }
+        .card { background: #12121a; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
         .sources-list { list-style: none; padding: 0; }
-        .sources-list li { padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
-        .sources-list strong { color: var(--accent-cyan); }
-        .sources-list a { color: var(--accent-green); text-decoration: none; }
+        .sources-list li { padding: 15px 0; border-bottom: 1px solid #333; }
+        .sources-list strong { color: #00d4ff; }
+        .sources-list a { color: #00ff88; text-decoration: none; }
         .sources-list a:hover { text-decoration: underline; }
-        
-        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 1rem; } }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
-    <nav class="navbar">
-        <a href="/" class="logo">
-            <div class="logo-icon">📈</div>
-            <span>Stock Analyzer</span>
-        </a>
-        <div class="nav">
-            <a href="/">Accueil</a>
-            <a href="/analyze">Analyser</a>
-            <a href="/watchlist">Watchlist</a>
-            <a href="/saved">Analyses</a>
-            <a href="/stocks">Stocks</a>
-        </div>
-    </nav>
-    
     <div class="container">
         <h1>{{ title }}</h1>
+        <div class="nav">
+            <a href="/">Home</a>
+            <a href="/portfolio">Portfolio</a>
+            <a href="/saved">Saved Analyses</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/my-watchlist">My Watchlist</a>
+            <a href="/stocks">Stocks</a>
+            <a href="/sources">Sources</a>
+        </div>
         {{ content|safe }}
     </div>
 </body>
@@ -1289,6 +1146,7 @@ STOCKS_HTML = '''
             <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
+            <a href="/stocks">Stocks</a>
         </div>
         <form action="/stocks" method="get" class="search-box">
             <input type="text" name="q" placeholder="Search ticker or name (ex: apple, AAPL)" value="{{ query }}">
