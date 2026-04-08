@@ -637,8 +637,27 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card" style="padding: 10px;">
-            <iframe src="https://www.tradingview.com/widget/ticker/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:80px;border-radius:10px;"></iframe>
-            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark" allowtransparency="true" frameborder="0" style="width:100%;height:400px;border-radius:10px;margin-top:10px;"></iframe>
+            <div class="tradingview-widget-container" style="height:400px;">
+                <div class="tradingview-widget-container__widget" style="height:400px;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                    "width": "100%",
+                    "height": 400,
+                    "symbol": "{{ data.ticker }}",
+                    "interval": "D",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "fr",
+                    "toolbar_bg": "#0a0a0f",
+                    "enable_publishing": false,
+                    "hide_side_toolbar": false,
+                    "allow_symbol_change": true,
+                    "container_id": "tradingview_widget"
+                });
+                </script>
+            </div>
         </div>
         
         <div class="card">
