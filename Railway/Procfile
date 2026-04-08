@@ -1,1 +1,1 @@
-web: cd Railway && python main.py
+web: python Railway/main.py
