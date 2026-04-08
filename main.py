@@ -580,6 +580,77 @@ HOMEPAGE = '''
 
 ANALYSIS_PAGE = '''
 <!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-gold: #ffd700;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666680;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; border-radius: 0 0 16px 16px; margin-bottom: 2rem; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
+        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
+        
+        h1 { font-family: 'Playfair Display', serif; color: var(--accent-cyan); margin-bottom: 1.5rem; }
+        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        table { width: 100%%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--accent-cyan); font-weight: 600; }
+        .score { font-weight: bold; }
+        .score-good { color: var(--accent-green); } .score-medium { color: var(--accent-gold); } .score-bad { color: #ff4757; }
+        .sources-list { list-style: none; padding: 0; }
+        .sources-list li { padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .sources-list strong { color: var(--accent-cyan); }
+        .sources-list a { color: var(--accent-green); text-decoration: none; }
+        .sources-list a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">📈</div>
+            <span>Stock Analyzer</span>
+        </a>
+        <div class="nav">
+            <a href="/">Accueil</a>
+            <a href="/analyze">Analyser</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/saved">Analyses</a>
+            <a href="/stocks">Stocks</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>{{ title }}</h1>
+        {{ content|safe }}
+    </div>
+</body>
+</html>
+'''
+<!DOCTYPE html>
 <html>
 <head>
     <title>{{ data.ticker }} - Analysis</title>
@@ -796,6 +867,78 @@ ANALYSIS_PAGE = '''
             <a href="/save/{{ data.ticker }}" class="btn btn-primary">Sauvegarder</a>
             <a href="/add-watchlist/{{ data.ticker }}" class="btn btn-secondary">Ajouter à la watchlist</a>
         </div>
+    </div>
+</body>
+</html>
+'''
+
+SIMPLE_PAGE = '''
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-cyan: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-gold: #ffd700;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666680;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%); color: #e0e0e0; min-height: 100vh; }
+        .bg-pattern { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%); z-index: -1; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; border-radius: 0 0 16px 16px; margin-bottom: 2rem; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; text-decoration: none; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #00d4ff, #00ff88); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .nav a { color: #a0a0a0; text-decoration: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: all 0.25s ease; }
+        .nav a:hover, .nav a.active { background: rgba(0, 212, 255, 0.1); color: #00d4ff; }
+        
+        h1 { font-family: 'Playfair Display', serif; color: var(--accent-cyan); margin-bottom: 1.5rem; }
+        .card { background: var(--bg-secondary); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        table { width: 100%%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--accent-cyan); font-weight: 600; }
+        .score { font-weight: bold; }
+        .score-good { color: var(--accent-green); } .score-medium { color: var(--accent-gold); } .score-bad { color: #ff4757; }
+        .sources-list { list-style: none; padding: 0; }
+        .sources-list li { padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .sources-list strong { color: var(--accent-cyan); }
+        .sources-list a { color: var(--accent-green); text-decoration: none; }
+        .sources-list a:hover { text-decoration: underline; }
+        
+        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <div class="logo-icon">📈</div>
+            <span>Stock Analyzer</span>
+        </a>
+        <div class="nav">
+            <a href="/">Accueil</a>
+            <a href="/analyze">Analyser</a>
+            <a href="/watchlist">Watchlist</a>
+            <a href="/saved">Analyses</a>
+            <a href="/stocks">Stocks</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>{{ title }}</h1>
+        {{ content|safe }}
     </div>
 </body>
 </html>
