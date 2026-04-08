@@ -636,9 +636,9 @@ ANALYSIS_PAGE = '''
             </div>
         </div>
         
-        <div class="card" style="padding: 10px;">
-            <div class="tradingview-widget-container" style="height:400px;">
-                <div class="tradingview-widget-container__widget" style="height:400px;"></div>
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="tradingview-widget-container" style="height:400px;width:100%;">
+                <div class="tradingview-widget-container__widget" style="height:400px;width:100%;"></div>
                 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                 <script type="text/javascript">
                 new TradingView.widget({
