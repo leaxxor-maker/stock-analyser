@@ -466,9 +466,13 @@ HOMEPAGE = '''
             <p>Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
             
             <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
-                <button class="search-btn" onclick="go()">Analyser</button>
+                <form action="/analyze" method="get" style="width:100%;display:flex;flex-direction:column;gap:1rem;">
+                    <div style="position:relative;">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" name="ticker" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch">
+                    </div>
+                    <button type="submit" class="search-btn">Analyser</button>
+                </form>
             </div>
             
             <div class="quick-tags">
@@ -572,11 +576,6 @@ HOMEPAGE = '''
     </div>
     
     <script>
-    function go() {
-        var q = document.getElementById('homeSearch').value.trim();
-        if (q) window.location.href = '/analyze?ticker=' + encodeURIComponent(q);
-    }
-    document.getElementById('homeSearch').addEventListener('keypress', function(e) { if (e.key === 'Enter') go(); });
     </script>
 </body>
 </html>
