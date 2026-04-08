@@ -637,11 +637,8 @@ ANALYSIS_PAGE = '''
         </div>
         
         <div class="card" style="padding: 10px;">
-            {% if '.' in data.ticker %}
-            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:350px;border-radius:10px;"></iframe>
-            {% else %}
-            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol=NYSE:{{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:350px;border-radius:10px;"></iframe>
-            {% endif %}
+            <iframe src="https://www.tradingview.com/widget/ticker/?symbol={{ data.ticker }}" allowtransparency="true" frameborder="0" style="width:100%;height:80px;border-radius:10px;"></iframe>
+            <iframe src="https://www.tradingview.com/widget/advanced-chart/?symbol={{ data.ticker }}&theme=dark" allowtransparency="true" frameborder="0" style="width:100%;height:400px;border-radius:10px;margin-top:10px;"></iframe>
         </div>
         
         <div class="card">
