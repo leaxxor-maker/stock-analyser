@@ -1146,7 +1146,6 @@ STOCKS_HTML = '''
             <a href="/my-watchlist">My Watchlist</a>
             <a href="/stocks">Stocks</a>
             <a href="/sources">Sources</a>
-            <a href="/stocks">Stocks</a>
         </div>
         <form action="/stocks" method="get" class="search-box">
             <input type="text" name="q" placeholder="Search ticker or name (ex: apple, AAPL)" value="{{ query }}">
