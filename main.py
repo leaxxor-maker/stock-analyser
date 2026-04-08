@@ -217,6 +217,7 @@ def analyze_stock(ticker):
     week52_high = info.get('fiftyTwoWeekHigh', 0) or 0
     week52_low = info.get('fiftyTwoWeekLow', 0) or 0
     beta = info.get('beta', 0) or 0
+    div_yield = info.get('dividendYield', 0) or 0
     last_div = info.get('lastDividendValue', 0)
     ex_div_date = info.get('exDividendDate', None)
     next_div_date = None
