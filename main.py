@@ -799,8 +799,8 @@ ANALYSIS_PAGE = '''
         <div class="card">
             <div class="section-title">NEWS & INFO</div>
             <div class="news-links">
-                <a href="https://finance.yahoo.com/quote/{{ data.ticker }}/news" target="_blank" class="news-link">📰 Yahoo Actualités</a>
-                <a href="https://www.tradingview.com/symbols/{{ data.ticker }}/news/" target="_blank" class="news-link">📊 TradingView</a>
+                <a href="https://www.bfmtv.com/categorie/bourse/" target="_blank" class="news-link">📰 BFM Business</a>
+                <a href="https://www.lesechos.fr/finance-marches" target="_blank" class="news-link">📊 Les Echos</a>
             </div>
         </div>
         
