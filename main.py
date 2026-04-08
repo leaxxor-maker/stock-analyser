@@ -217,7 +217,35 @@ def analyze_stock(ticker):
     week52_high = info.get('fiftyTwoWeekHigh', 0) or 0
     week52_low = info.get('fiftyTwoWeekLow', 0) or 0
     beta = info.get('beta', 0) or 0
-    div_yield = info.get('dividendYield', 0) or 0
+    last_div = info.get('lastDividendValue', 0)
+    ex_div_date = info.get('exDividendDate', None)
+    next_div_date = None
+    if ex_div_date:
+        import datetime
+        next_div_date = datetime.datetime.fromtimestamp(ex_div_date).strftime('%Y-%m-%d') if ex_div_date else None
+    
+    next_earnings = info.get('nextEarningsDate', None)
+    if next_earnings:
+        import datetime
+        next_earnings = datetime.datetime.fromtimestamp(next_earnings).strftime('%Y-%m-%d') if next_earnings else None
+    
+    eps_estimate = info.get('epsEstimateCurrentYear', 0) or 0
+    earnings_summary = info.get('mostRecentQuarter', None)
+    
+    price_history = []
+    try:
+        hist = yf.Ticker(ticker).history(period='60d')
+        for date, row in hist.iterrows():
+            price_history.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'open': row['Open'],
+                'high': row['High'],
+                'low': row['Low'],
+                'close': row['Close'],
+                'volume': row['Volume']
+            })
+    except:
+        price_history = []
     
     try:
         hist = yf.Ticker(ticker).history(period='1y')
@@ -325,6 +353,9 @@ def analyze_stock(ticker):
         'trend': trend, 'beta': beta, 'div_yield': div_yield,
         'forecast_1w': forecast_1w, 'forecast_1m': forecast_1m, 'forecast_6m': forecast_6m,
         'worst_1w': worst_1w, 'worst_1m': worst_1m, 'worst_6m': worst_6m,
+        'last_div': last_div, 'ex_div_date': ex_div_date, 'next_div_date': next_div_date,
+        'next_earnings': next_earnings, 'eps_estimate': eps_estimate, 'earnings_summary': earnings_summary,
+        'price_history': price_history,
     }
 
 def get_news_links(ticker):
@@ -455,6 +486,7 @@ HOMEPAGE = '''
             <a href="/watchlist">Watchlist</a>
             <a href="/saved">Analyses</a>
             <a href="/stocks">Stocks</a>
+            <a href="/screener">Screener</a>
             <a href="/sources">Sources</a>
         </div>
     </nav>
@@ -774,10 +806,48 @@ ANALYSIS_PAGE = '''
         <div class="card">
             <div class="section-title">NEWS & INFO</div>
             <div class="news-links">
-                <a href="{{ news.tradingview }}" target="_blank" class="news-link">TradingView</a>
-                <a href="{{ news.google }}" target="_blank" class="news-link">Google Finance</a>
-                <a href="{{ news.yahoo }}" target="_blank" class="news-link">Yahoo Finance</a>
-                <a href="{{ news.quiver }}" target="_blank" class="news-link">Quiver Quantitative</a>
+                <a href="https://finance.yahoo.com/quote/{{ data.ticker }}/news" target="_blank" class="news-link">📰 Actualités Yahoo</a>
+                <a href="https://www.tradingview.com/symbols/{{ data.ticker }}/news/" target="_blank" class="news-link">📊 TradingView News</a>
+                <a href="https://www.investing.com/equities/{{ data.ticker }}-news" target="_blank" class="news-link">📈 Investing.com</a>
+                <a href="https://seekingalpha.com/symbol/{{ data.ticker }}" target="_blank" class="news-link">🔍 Seeking Alpha</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">HISTORIQUE DES PRIX</div>
+            <div style="overflow-x:auto;">
+            <table style="font-size:0.85rem;">
+                <tr><th>Date</th><th>Ouverture</th><th>Plus Haut</th><th>Plus Bas</th><th>Clôture</th><th>Volume</th></tr>
+            {% for p in price_history[:20] %}
+                <tr>
+                    <td style="color:#888;">{{ p.date }}</td>
+                    <td>${{ "%.2f"|format(p.open) }}</td>
+                    <td style="color:#00ff88;">${{ "%.2f"|format(p.high) }}</td>
+                    <td style="color:#ff4444;">${{ "%.2f"|format(p.low) }}</td>
+                    <td>${{ "%.2f"|format(p.close) }}</td>
+                    <td style="color:#888;">{{ "%.0f"|format(p.volume/1e6) }}M</td>
+                </tr>
+            {% endfor %}
+            </table>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">DIVIDENDES</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">Rendement</div><div class="stat-value {% if data.div_yield > 0.03 %}stat-good{% endif %}">{{ "%.2f"|format(data.div_yield * 100) if data.div_yield else 0 }}%</div></div>
+                <div class="stat"><div class="stat-label">Dernier dividende</div><div class="stat-value">${{ "%.2f"|format(data.last_div) if data.last_div else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Ex-Date</div><div class="stat-value">{{ data.ex_div_date if data.ex_div_date else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Prochain paiement</div><div class="stat-value">{{ data.next_div_date if data.next_div_date else 'N/A' }}</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="section-title">CALENDRIER DES RÉSULTATS</div>
+            <div class="grid">
+                <div class="stat"><div class="stat-label">Prochain earnings</div><div class="stat-value" style="color:#ffd700;">{{ data.next_earnings if data.next_earnings else 'À venir' }}</div></div>
+                <div class="stat"><div class="stat-label">Estimation EPS</div><div class="stat-value">${{ "%.2f"|format(data.eps_estimate) if data.eps_estimate else 'N/A' }}</div></div>
+                <div class="stat"><div class="stat-label">Dernier EPS</div><div class="stat-value">${{ "%.2f"|format(data.earnings_summary) if data.earnings_summary else 'N/A' }}</div></div>
             </div>
         </div>
         
@@ -1231,6 +1301,77 @@ def stocks():
         tickers=tickers,
         count=len(tickers)
     )
+
+@app.route('/screener')
+def screener():
+    filters = {
+        'pe': request.args.get('pe', ''),
+        'dividend': request.args.get('dividend', ''),
+        'sector': request.args.get('sector', ''),
+    }
+    
+    top_stocks = [
+        {'ticker': 'AAPL', 'name': 'Apple Inc.', 'price': 175.43, 'pe': 28.5, 'div': 0.52, 'sector': 'Technology'},
+        {'ticker': 'MSFT', 'name': 'Microsoft', 'price': 378.91, 'pe': 35.2, 'div': 0.75, 'sector': 'Technology'},
+        {'ticker': 'GOOGL', 'name': 'Alphabet', 'price': 141.80, 'pe': 24.8, 'div': 0.0, 'sector': 'Technology'},
+        {'ticker': 'AMZN', 'name': 'Amazon', 'price': 178.25, 'pe': 62.5, 'div': 0.0, 'sector': 'Consumer'},
+        {'ticker': 'NVDA', 'name': 'NVIDIA', 'price': 875.28, 'pe': 65.3, 'div': 0.03, 'sector': 'Technology'},
+        {'ticker': 'META', 'name': 'Meta', 'price': 505.95, 'pe': 32.1, 'div': 0.45, 'sector': 'Technology'},
+        {'ticker': 'TSLA', 'name': 'Tesla', 'price': 175.21, 'pe': 72.8, 'div': 0.0, 'sector': 'Automotive'},
+        {'ticker': 'JPM', 'name': 'JPMorgan', 'price': 198.47, 'pe': 11.2, 'div': 2.40, 'sector': 'Finance'},
+        {'ticker': 'JNJ', 'name': 'Johnson & Johnson', 'price': 156.74, 'pe': 15.8, 'div': 3.05, 'sector': 'Healthcare'},
+        {'ticker': 'V', 'name': 'Visa', 'price': 279.85, 'pe': 30.5, 'div': 0.85, 'sector': 'Finance'},
+    ]
+    
+    if filters['pe'] == 'low':
+        top_stocks = [s for s in top_stocks if s['pe'] < 25]
+    elif filters['pe'] == 'high':
+        top_stocks = [s for s in top_stocks if s['pe'] > 40]
+    
+    if filters['dividend'] == 'yes':
+        top_stocks = [s for s in top_stocks if s['div'] > 0]
+    
+    content = '''
+    <div class="card">
+        <h2 style="color:#00d4ff;margin-bottom:20px;">🔍 Screener d'Actions</h2>
+        
+        <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:25px;">
+            <div>
+                <label style="color:#888;display:block;margin-bottom:5px;">Ratio P/E</label>
+                <select onchange="window.location.href='/screener?pe='+this.value" style="padding:10px;background:#1a1a25;color:#fff;border:1px solid #333;border-radius:8px;">
+                    <option value="">Tous</option>
+                    <option value="low">P/E &lt; 25 (Sous-évalué)</option>
+                    <option value="high">P/E &gt; 40 (Surévalué)</option>
+                </select>
+            </div>
+            <div>
+                <label style="color:#888;display:block;margin-bottom:5px;">Dividendes</label>
+                <select onchange="window.location.href='/screener?dividend='+this.value" style="padding:10px;background:#1a1a25;color:#fff;border:1px solid #333;border-radius:8px;">
+                    <option value="">Tous</option>
+                    <option value="yes">Avec dividendes</option>
+                </select>
+            </div>
+        </div>
+        
+        <table>
+            <tr><th>Ticker</th><th>Nom</th><th>Prix</th><th>P/E</th><th>Div %</th><th>Secteur</th><th></th></tr>
+    '''
+    for s in top_stocks:
+        content += f'''<tr>
+            <td style="color:#00d4ff;font-weight:bold;">{s['ticker']}</td>
+            <td style="color:#888;">{s['name']}</td>
+            <td>${s['price']}</td>
+            <td style="color:{'#00ff88' if s['pe'] < 25 else '#ffaa00' if s['pe'] < 40 else '#ff4444'}">{s['pe']}</td>
+            <td style="color:{'#00ff88' if s['div'] > 1 else '#888'}">{s['div']}%</td>
+            <td style="color:#888;">{s['sector']}</td>
+            <td><a href="/analyze?ticker={s['ticker']}" style="background:#00d4ff;color:#000;padding:5px 15px;border-radius:5px;text-decoration:none;font-size:0.85em;">Analyser</a></td>
+        </tr>'''
+    
+    content += '''
+        </table>
+    </div>
+    '''
+    return render_template_string(SIMPLE_PAGE, title='Screener', content=content)
 
 @app.route('/sources')
 def sources():
