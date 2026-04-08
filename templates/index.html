@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Stock Analyzer Pro - Accueil{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <h1 class="hero-title">L'Analyse Boursière, Simplifiée</h1>
+    <p class="hero-subtitle">Analysez des actions et ETF avec des indicateurs financiers professionnels. Des décisions éclairées, à portée de main.</p>
+    
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="Rechercher une action ou un ETF..." id="homeSearch" onkeypress="if(event.key==='Enter'){window.location.href='/search?q='+this.value}">
+    </div>
+    
+    <div class="quick-tags">
+        <a href="/analyze?ticker=SPY" class="quick-tag">S&P 500</a>
+        <a href="/analyze?ticker=QQQ" class="quick-tag">NASDAQ</a>
+        <a href="/analyze?ticker=MSFT" class="quick-tag">Microsoft</a>
+        <a href="/analyze?ticker=AAPL" class="quick-tag">Apple</a>
+        <a href="/analyze?ticker=NVDA" class="quick-tag">NVIDIA</a>
+        <a href="/analyze?ticker=TSLA" class="quick-tag">Tesla</a>
+        <a href="/analyze?ticker=META" class="quick-tag">Meta</a>
+        <a href="/etf" class="quick-tag">Voir tous les ETF →</a>
+    </div>
+</section>
+
+<div class="market-ticker">
+    <div class="ticker-item">
+        <span class="ticker-symbol">SPY</span>
+        <span class="ticker-price">$502.35</span>
+        <span class="ticker-change ticker-up">+1.2%</span>
+    </div>
+    <div class="ticker-item">
+        <span class="ticker-symbol">QQQ</span>
+        <span class="ticker-price">$438.20</span>
+        <span class="ticker-change ticker-up">+1.8%</span>
+    </div>
+    <div class="ticker-item">
+        <span class="ticker-symbol">DIA</span>
+        <span class="ticker-price">$398.50</span>
+        <span class="ticker-change ticker-up">+0.4%</span>
+    </div>
+    <div class="ticker-item">
+        <span class="ticker-symbol">VWO</span>
+        <span class="ticker-price">$43.25</span>
+        <span class="ticker-change ticker-down">-0.3%</span>
+    </div>
+    <div class="ticker-item">
+        <span class="ticker-symbol">TLT</span>
+        <span class="ticker-price">$96.80</span>
+        <span class="ticker-change ticker-down">-0.5%</span>
+    </div>
+    <div class="ticker-item">
+        <span class="ticker-symbol">GLD</span>
+        <span class="ticker-price">$189.45</span>
+        <span class="ticker-change ticker-up">+0.8%</span>
+    </div>
+</div>
+
+<h2 class="section-title">À la une</h2>
+<div class="featured-news">
+    <article class="featured-card">
+        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80" alt="Bourse" class="featured-image">
+        <div class="featured-overlay">
+            <span class="featured-category">Marchés</span>
+            <h3 class="featured-title"><a href="#">Les marchés actions atteignent de nouveaux records historiques</a></h3>
+            <p class="featured-meta">Il y a 2 heures • Bloomberg</p>
+        </div>
+    </article>
+    <article class="featured-card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Tech" class="featured-image">
+        <div class="featured-overlay">
+            <span class="featured-category">Technologie</span>
+            <h3 class="featured-title"><a href="#">L'IA pousse NVIDIA vers les 900 milliards de capitalisation</a></h3>
+            <p class="featured-meta">Il y a 4 heures • Reuters</p>
+        </div>
+    </article>
+</div>
+
+<h2 class="section-title">Actualités du jour</h2>
+<div class="news-grid">
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&q=80" alt="Fed" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Macro</span>
+            <h3 class="news-title"><a href="#">La Fed maintient ses taux, les marchés positifs</a></h3>
+            <p class="news-meta">Il y a 1h • Les Echos</p>
+        </div>
+    </article>
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=400&q=80" alt="Crypto" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Crypto</span>
+            <h3 class="news-title"><a href="#">Bitcoin dépasse les 70 000$ sur fond d'intérêt institutionnel</a></h3>
+            <p class="news-meta">Il y a 2h • CoinDesk</p>
+        </div>
+    </article>
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80" alt="Energy" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Énergie</span>
+            <h3 class="news-title"><a href="#">Le brut Brent stable à $85 le baril</a></h3>
+            <p class="news-meta">Il y a 3h • AFP</p>
+        </div>
+    </article>
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1565514020176-0223a8e73e48?w=400&q=80" alt="Tech" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Technologie</span>
+            <h3 class="news-title"><a href="#">Apple présente ses nouvelles innovations</a></h3>
+            <p class="news-meta">Il y a 5h • WSJ</p>
+        </div>
+    </article>
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&q=80" alt="Finance" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Finance</span>
+            <h3 class="news-title"><a href="#">JPMorgan dépasse les attentes au T1</a></h3>
+            <p class="news-meta">Il y a 6h • Bloomberg</p>
+        </div>
+    </article>
+    <article class="news-card">
+        <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&q=80" alt="Europe" class="news-image">
+        <div class="news-content">
+            <span class="news-category">Europe</span>
+            <h3 class="news-title"><a href="#">Le CAC 40 progresse de 0.8%</a></h3>
+            <p class="news-meta">Il y a 7h • Le Monde</p>
+        </div>
+    </article>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_companies or 0 }}</div>
+        <div class="stat-label">Entreprises</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_analyses or 0 }}</div>
+        <div class="stat-label">Analyses</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.recommendations.get('Achat', 0) + stats.recommendations.get('Achat Fort', 0) }}</div>
+        <div class="stat-label">Achats</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.recommendations.get('Neutre', 0) }}</div>
+        <div class="stat-label">Neutres</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">50+</div>
+        <div class="stat-label">ETF</div>
+    </div>
+</div>
+
+{% if recent %}
+<div class="card">
+    <h2 class="section-title" style="font-size: 1.4rem;">Analyses Récentes</h2>
+    <table class="stock-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Entreprise</th>
+                <th>Prix</th>
+                <th>P/E</th>
+                <th>Score</th>
+                <th>Recommandation</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ind in recent[:8] %}
+            <tr>
+                <td><span class="stock-symbol">{{ ind.ticker }}</span></td>
+                <td><span class="stock-name">{{ ind.company_name[:35] if ind.company_name else ind.ticker }}</span></td>
+                <td>${{ "%.2f"|format(ind.current_price) }}</td>
+                <td>{{ "%.2f"|format(ind.price_to_earnings) if ind.price_to_earnings else "N/A" }}x</td>
+                <td>
+                    <span class="score {% if ind.get_overall_score() >= 60 %}score-high{% elif ind.get_overall_score() >= 40 %}score-medium{% else %}score-low{% endif %}">
+                        {{ "%.0f"|format(ind.get_overall_score()) }}
+                    </span>
+                </td>
+                <td>
+                    {% set rec = ind.get_recommendation() %}
+                    <span class="badge {% if 'Achat' in rec %}badge-buy{% elif 'Neutre' in rec %}badge-hold{% else %}badge-sell{% endif %}">
+                        {{ rec }}
+                    </span>
+                </td>
+                <td style="color: var(--text-muted);">{{ ind.timestamp.strftime('%d/%m') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

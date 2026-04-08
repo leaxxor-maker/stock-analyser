@@ -1,0 +1,25 @@
+CLOUD ACCESS SETUP
+==================
+
+1. INSTALL CLOUDFLARED (one time only):
+   - Download from: https://github.com/cloudflare/cloudflared/releases
+   - Look for: cloudflared-windows-amd64.exe
+   - Rename to: cloudflared.exe
+   - Place in: C:\stock_analyzer\
+
+   OR use PowerShell (run as Admin):
+   iwr https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -o C:\stock_analyzer\cloudflared.exe
+
+
+2. RUN THE APP:
+
+   Double-click: cloud_run.bat
+
+   You'll see 2 windows:
+   - Stock Analyzer (the web server)
+   - Cloudflare Tunnel (shows your URL)
+
+   Look for URL like:
+   https://random-name.trycloudflare.com
+
+   Open that URL in ANY browser, from ANY device!

@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block title %}{{ ind.ticker }} - {{ ind.company_name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <a href="/analyze" class="btn btn-secondary">← Nouvelle analyse</a>
+</div>
+
+<div class="card" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 153, 204, 0.05) 100%);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 2rem;">
+        <div>
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ ind.company_name }}</h1>
+            <p style="color: #888; font-size: 1.2rem;">{{ ind.ticker }}</p>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 3rem; font-weight: 700; color: #00d4ff;">${{ "%.2f"|format(ind.current_price) }}</div>
+            <div style="color: #666;">Capitalisation: {{ ind.format_currency(ind.market_cap) }}</div>
+        </div>
+    </div>
+    
+    <div style="display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+        <div>
+            <div class="score {% if ind.get_overall_score() >= 60 %}score-high{% elif ind.get_overall_score() >= 40 %}score-medium{% else %}score-low{% endif %}" style="font-size: 3rem;">
+                {{ "%.1f"|format(ind.get_overall_score()) }}
+            </div>
+            <div style="color: #666;">Score Global / 100</div>
+        </div>
+        <div>
+            {% set rec = ind.get_recommendation() %}
+            <div class="badge {% if 'Achat' in rec %}badge-buy{% elif 'Neutre' in rec %}badge-hold{% else %}badge-sell{% endif %}" style="font-size: 1.2rem; padding: 0.5rem 1.5rem;">
+                {{ rec }}
+            </div>
+            <div style="color: #666; margin-top: 0.5rem;">Recommandation</div>
+        </div>
+        <div>
+            <div style="color: {% if ind.upside_downside and ind.upside_downside > 0 %}#00ff88{% else %}#ff4757{% endif %}; font-size: 1.5rem; font-weight: 600;">
+                {% if ind.upside_downside %}{{ "%+.1f"|format(ind.upside_downside) }}%{% else %}N/A{% endif %}
+            </div>
+            <div style="color: #666;">Upside vs Target</div>
+        </div>
+    </div>
+</div>
+
+<div class="indicator-grid">
+    <div class="indicator-card">
+        <div class="indicator-label">Valorisation</div>
+        <div class="indicator-value">{{ "%.2f"|format(ind.get_valuation_score()) }}<span style="font-size: 1rem;">/100</span></div>
+        <div class="indicator-interpretation {% if ind.get_valuation_score() >= 60 %}good{% elif ind.get_valuation_score() >= 40 %}warning{% else %}bad{% endif %}">
+            {% if ind.get_valuation_score() >= 60 %}✓ Bon marché{% elif ind.get_valuation_score() >= 40 %}⚠ Moyen{% else %}❌ Cher{% endif %}
+        </div>
+    </div>
+    <div class="indicator-card">
+        <div class="indicator-label">Solvabilité</div>
+        <div class="indicator-value">{{ "%.2f"|format(ind.get_solvency_score()) }}<span style="font-size: 1rem;">/100</span></div>
+        <div class="indicator-interpretation {% if ind.get_solvency_score() >= 60 %}good{% elif ind.get_solvency_score() >= 40 %}warning{% else %}bad{% endif %}">
+            {% if ind.get_solvency_score() >= 60 %}✓ Solide{% elif ind.get_solvency_score() >= 40 %}⚠ Modéré{% else %}❌ Risqué{% endif %}
+        </div>
+    </div>
+    <div class="indicator-card">
+        <div class="indicator-label">Profitabilité</div>
+        <div class="indicator-value">{{ "%.2f"|format(ind.get_profitability_score()) }}<span style="font-size: 1rem;">/100</span></div>
+        <div class="indicator-interpretation {% if ind.get_profitability_score() >= 60 %}good{% elif ind.get_profitability_score() >= 40 %}warning{% else %}bad{% endif %}">
+            {% if ind.get_profitability_score() >= 60 %}✓ Excellent{% elif ind.get_profitability_score() >= 40 %}⚠ Moyen{% else %}❌ Faible{% endif %}
+        </div>
+    </div>
+    <div class="indicator-card">
+        <div class="indicator-label">Croissance</div>
+        <div class="indicator-value">{{ "%.2f"|format(ind.get_growth_score()) }}<span style="font-size: 1rem;">/100</span></div>
+        <div class="indicator-interpretation {% if ind.get_growth_score() >= 60 %}good{% elif ind.get_growth_score() >= 40 %}warning{% else %}bad{% endif %}">
+            {% if ind.get_growth_score() >= 60 %}✓ Forte croissance{% elif ind.get_growth_score() >= 40 %}⚠ Modérée{% else %}❌ Lente{% endif %}
+        </div>
+    </div>
+    <div class="indicator-card">
+        <div class="indicator-label">Cash Flow</div>
+        <div class="indicator-value">{{ "%.2f"|format(ind.get_cash_flow_score()) }}<span style="font-size: 1rem;">/100</span></div>
+        <div class="indicator-interpretation {% if ind.get_cash_flow_score() >= 60 %}good{% elif ind.get_cash_flow_score() >= 40 %}warning{% else %}bad{% endif %}">
+            {% if ind.get_cash_flow_score() >= 60 %}✓ Excellent{% elif ind.get_cash_flow_score() >= 40 %}⚠ Moyen{% else %}❌ Faible{% endif %}
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+    <div class="card">
+        <h3 class="card-title">📈 Valorisation</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">P/E (Price/Earnings)</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.price_to_earnings) if ind.price_to_earnings else "N/A" }}x</td>
+                <td style="text-align: right; width: 80px;" class="{% if ind.price_to_earnings and 10 <= ind.price_to_earnings <= 25 %}good{% elif ind.price_to_earnings and ind.price_to_earnings > 25 %}warning{% endif %}">
+                    {% if ind.price_to_earnings %}
+                        {% if 10 <= ind.price_to_earnings <= 25 %}✓{% elif ind.price_to_earnings > 25 %}⚠{% else %}⚠{% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">PEG Ratio</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.peg_ratio) if ind.peg_ratio else "N/A" }}x</td>
+                <td style="text-align: right;" class="{% if ind.peg_ratio and ind.peg_ratio <= 1 %}good{% elif ind.peg_ratio %}warning{% endif %}">
+                    {% if ind.peg_ratio %}
+                        {% if ind.peg_ratio <= 1 %}✓{% else %}⚠{% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">P/B (Price/Book)</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.price_to_book) if ind.price_to_book else "N/A" }}x</td>
+                <td style="text-align: right;" class="{% if ind.price_to_book and ind.price_to_book <= 5 %}good{% elif ind.price_to_book %}warning{% endif %}">
+                    {% if ind.price_to_book %}✓{% if ind.price_to_book > 5 %}⚠{% endif %}{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">EV/Revenue</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.ev_to_revenue) if ind.ev_to_revenue else "N/A" }}x</td>
+                <td style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">EV/EBITDA</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.ev_to_ebitda) if ind.ev_to_ebitda else "N/A" }}x</td>
+                <td style="text-align: right;"></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">💰 Rentabilité</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Marge Brute</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.gross_margin) if ind.gross_margin else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Marge Opérationnelle</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.operating_margin) if ind.operating_margin else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Marge Nette</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.profit_margin) if ind.profit_margin else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">ROE</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.roe) if ind.roe else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">ROA</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.roa) if ind.roa else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">EPS</td>
+                <td style="text-align: right; font-weight: 600;">${{ "%.2f"|format(ind.earnings_per_share) if ind.earnings_per_share else "N/A" }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">📊 Croissance</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Croissance CA (YoY)</td>
+                <td style="text-align: right; font-weight: 600;" class="{% if ind.revenue_growth_yoy and ind.revenue_growth_yoy >= 10 %}good{% elif ind.revenue_growth_yow and ind.revenue_growth_yow < 0 %}bad{% endif %}">
+                    {{ "%.1f"|format(ind.revenue_growth_yoy) if ind.revenue_growth_yoy else "N/A" }}%
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Croissance 3Y (annualisée)</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.revenue_growth_3y) if ind.revenue_growth_3y else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">CA Total</td>
+                <td style="text-align: right; font-weight: 600;">{{ ind.format_currency(ind.revenue) }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">🏦 Endettement</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Dette/Equity</td>
+                <td style="text-align: right; font-weight: 600;" class="{% if ind.debt_to_equity and ind.debt_to_equity < 1 %}good{% elif ind.debt_to_equity and ind.debt_to_equity >= 2 %}bad{% endif %}">
+                    {{ "%.2f"|format(ind.debt_to_equity) if ind.debt_to_equity else "N/A" }}x
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Dette Totale</td>
+                <td style="text-align: right; font-weight: 600;">{{ ind.format_currency(ind.total_debt) }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Dette/Actifs</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.debt_to_assets) if ind.debt_to_assets else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Current Ratio</td>
+                <td style="text-align: right; font-weight: 600;" class="{% if ind.current_ratio and ind.current_ratio >= 1.5 %}good{% elif ind.current_ratio and ind.current_ratio < 1 %}bad{% endif %}">
+                    {{ "%.2f"|format(ind.current_ratio) if ind.current_ratio else "N/A" }}x
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Quick Ratio</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.quick_ratio) if ind.quick_ratio else "N/A" }}x</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">💵 Cash Flow</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Free Cash Flow</td>
+                <td style="text-align: right; font-weight: 600;" class="{% if ind.free_cash_flow and ind.free_cash_flow > 0 %}good{% else %}bad{% endif %}">
+                    {{ ind.format_currency(ind.free_cash_flow) }}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">FCF/Action</td>
+                <td style="text-align: right; font-weight: 600;">${{ "%.2f"|format(ind.fcf_per_share) if ind.fcf_per_share else "N/A" }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Operating CF</td>
+                <td style="text-align: right; font-weight: 600;">{{ ind.format_currency(ind.operating_cash_flow) }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">⚠️ Risque & Dividendes</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Bêta</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.beta) if ind.beta else "N/A" }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">52w High</td>
+                <td style="text-align: right; font-weight: 600;">${{ "%.2f"|format(ind.week_52_high) if ind.week_52_high else "N/A" }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">52w Low</td>
+                <td style="text-align: right; font-weight: 600;">${{ "%.2f"|format(ind.week_52_low) if ind.week_52_low else "N/A" }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Rendement Dividende</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.2f"|format(ind.dividend_yield * 100) if ind.dividend_yield else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Payout Ratio</td>
+                <td style="text-align: right; font-weight: 600;">{{ "%.1f"|format(ind.payout_ratio * 100) if ind.payout_ratio else "N/A" }}%</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.75rem 0; color: #888;">Rating Analystes</td>
+                <td style="text-align: right; font-weight: 600;">{{ ind.analyst_rating or "N/A" }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem; text-align: center; color: #666;">
+    Analyse du {{ ind.timestamp.strftime('%d/%m/%Y à %H:%M:%S') }}
+</div>
+{% endblock %}

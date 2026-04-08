@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Analyser - Stock Analyzer Pro{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="padding: 2rem 0;">
+    <h1 class="hero-title">Analyser une Action</h1>
+    <p class="hero-subtitle">Entrez un ticker ou nom d'entreprise pour obtenir une analyse complète</p>
+</section>
+
+{% if error %}
+<div class="card" style="background: rgba(255, 71, 87, 0.1); border-color: #ff4757;">
+    <p style="color: #ff4757;">{{ error }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <form method="POST">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" name="ticker" class="search-input" placeholder="Ticker ou nom (ex: MSFT, Apple, NVIDIA, SPY...)" required>
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">Lancer l'analyse</button>
+        </div>
+    </form>
+    
+    <div class="quick-tags" style="margin-top: 1.5rem;">
+        <span style="color: var(--text-muted);">Actions:</span>
+        <a href="?ticker=MSFT" class="quick-link">MSFT</a>
+        <a href="?ticker=AAPL" class="quick-link">AAPL</a>
+        <a href="?ticker=GOOGL" class="quick-link">GOOGL</a>
+        <a href="?ticker=NVDA" class="quick-link">NVDA</a>
+        <a href="?ticker=AMZN" class="quick-link">AMZN</a>
+        <a href="?ticker=META" class="quick-link">META</a>
+        <a href="?ticker=TSLA" class="quick-link">TSLA</a>
+        <a href="?ticker=JPM" class="quick-link">JPM</a>
+        <a href="?ticker=LLY" class="quick-link">LLY</a>
+    </div>
+    <div class="quick-tags" style="margin-top: 0.5rem;">
+        <span style="color: var(--text-muted);">ETF:</span>
+        <a href="?ticker=SPY" class="quick-link">SPY</a>
+        <a href="?ticker=QQQ" class="quick-link">QQQ</a>
+        <a href="?ticker=VOO" class="quick-link">VOO</a>
+        <a href="?ticker=VTI" class="quick-link">VTI</a>
+        <a href="?ticker=GLD" class="quick-link">GLD</a>
+        <a href="?ticker=BND" class="quick-link">BND</a>
+    </div>
+</div>
+
+<div class="card" style="background: var(--bg-tertiary);">
+    <h3 style="color: var(--accent-cyan); margin-bottom: 1rem; font-size: 1.1rem;">💡 Comment ça marche</h3>
+    <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: 1.25rem;">
+        <li>Entrez le <strong>ticker</strong> (MSFT, AAPL) ou le <strong>nom</strong> (Microsoft, Apple)</li>
+        <li>L'analyse inclut <strong>P/E, PEG, P/B, P/S</strong> pour la valorisation</li>
+        <li>Les scores de <strong>rentabilité, croissance, endettement</strong> sont calculés automatiquement</li>
+        <li>Les analyses sont <strong>sauvegardées</strong> dans la bibliothèque pour consultation future</li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}ETF - Stock Analyzer Pro{% endblock %}
+
+{% block content %}
+<section class="hero-section" style="padding: 2rem 0;">
+    <h1 class="hero-title">Guide des ETF</h1>
+    <p class="hero-subtitle">Découvrez les fonds négociés en bourse les plus populaires pour diversifier votre portefeuille</p>
+</section>
+
+{% for category, etfs in etfs_by_category.items() %}
+<div class="card">
+    <h2 class="section-title" style="font-size: 1.4rem;">{{ category }}</h2>
+    <div class="etf-grid">
+        {% for etf in etfs %}
+        <a href="/analyze?ticker={{ etf.ticker }}" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">{{ etf.ticker }}</span>
+                <span class="etf-type">ETF</span>
+            </div>
+            <div class="etf-name">{{ etf.name }}</div>
+            <span class="etf-category">{{ etf.industry }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="card">
+    <h2 class="section-title" style="font-size: 1.4rem;">Autres ETF Populaires</h2>
+    <div class="etf-grid">
+        <a href="/analyze?ticker=VXX" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">VXX</span>
+                <span class="etf-type">ETN</span>
+            </div>
+            <div class="etf-name">iPath Series B S&P 500 VIX Short-Term ETN</div>
+            <span class="etf-category">Volatility</span>
+        </a>
+        <a href="/analyze?ticker=TQQQ" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">TQQQ</span>
+                <span class="etf-type">3x</span>
+            </div>
+            <div class="etf-name">ProShares UltraPro QQQ</div>
+            <span class="etf-category">Leveraged</span>
+        </a>
+        <a href="/analyze?ticker=SQQQ" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">SQQQ</span>
+                <span class="etf-type">-3x</span>
+            </div>
+            <div class="etf-name">ProShares UltraShort QQQ</div>
+            <span class="etf-category">Inverse</span>
+        </a>
+        <a href="/analyze?ticker=IEFA" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">IEFA</span>
+                <span class="etf-type">ETF</span>
+            </div>
+            <div class="etf-name">iShares Core MSCI EAFE ETF</div>
+            <span class="etf-category">Developed Markets</span>
+        </a>
+        <a href="/analyze?ticker=IEMG" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">IEMG</span>
+                <span class="etf-type">ETF</span>
+            </div>
+            <div class="etf-name">iShares Core MSCI Emerging Markets ETF</div>
+            <span class="etf-category">Emerging Markets</span>
+        </a>
+        <a href="/analyze?ticker=ESGU" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">ESGU</span>
+                <span class="etf-type">ESG</span>
+            </div>
+            <div class="etf-name">iShares ESG Aware MSCI USA ETF</div>
+            <span class="etf-category">ESG</span>
+        </a>
+        <a href="/analyze?ticker=SUSA" class="etf-card">
+            <div class="etf-header">
+                <span class="etf-symbol">SUSA</span>
+                <span class="etf-type">ESG</span>
+            </div>
+            <div class="etf-name">iShares ESG Aware MSCI USA Small-Cap ETF</div>
+            <span class="etf-category">ESG</span>
+        </a>
+    </div>
+</div>
+
+<div class="card" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.05)); border-color: var(--accent-cyan);">
+    <h2 class="section-title" style="font-size: 1.3rem; margin-bottom: 1rem;">💡 Conseils pour investir en ETF</h2>
+    <ul style="color: var(--text-secondary); padding-left: 1.5rem; line-height: 1.8;">
+        <li><strong>Diversification</strong> - Les ETF permettent d'investir dans dozens d'actions avec un seul achat</li>
+        <li><strong>Frais réduits</strong> - Les ETF ont généralement des frais de gestion plus bas que les fonds actifs</li>
+        <li><strong>Liquidité</strong> - Les ETF se négocient comme des actions pendant les heures de marché</li>
+        <li><strong>Fiscalité</strong> - Les ETF sont généralement plus fiscalement efficaces que les fonds communs</li>
+    </ul>
+</div>
+{% endblock %}

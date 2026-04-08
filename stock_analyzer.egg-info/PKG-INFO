@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: stock-analyzer
+Version: 1.0.0
+Summary: Application complete d'analyse d'actions avec indicateurs financiers
+Author: Stock Analyzer AI
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: Topic :: Office/Business :: Financial :: Investment
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Requires-Dist: yfinance>=0.2.28
+Requires-Dist: rich>=13.7.0
+Requires-Dist: tabulate>=0.9.0
+Dynamic: author
+Dynamic: classifier
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

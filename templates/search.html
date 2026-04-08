@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Rechercher une Entreprise{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">🔍 Rechercher une Entreprise</h1>
+
+<div class="card">
+    <form>
+        <div class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Tapez un nom ou ticker (ex: Microsoft, MSFT, Apple...)" value="{{ query or '' }}" autofocus>
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </div>
+    </form>
+</div>
+
+{% if results %}
+<div class="card">
+    <h3 class="card-title">Résultats pour "{{ query }}"</h3>
+    <table class="stock-table" style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Entreprise</th>
+                <th>Secteur</th>
+                <th>Industrie</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td><strong>{{ r.ticker }}</strong></td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.sector or 'N/A' }}</td>
+                <td>{{ r.industry or 'N/A' }}</td>
+                <td>
+                    <a href="/analyze" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        Analyser
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif query %}
+<div class="card" style="text-align: center; padding: 3rem;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+    <p style="color: #888;">Aucun résultat pour "{{ query }}"</p>
+</div>
+{% endif %}
+
+<div class="card" style="margin-top: 2rem;">
+    <h3 class="card-title">📂 Tous les Secteurs</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        {% for sector in sectors %}
+        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; text-align: center;">
+            <div style="color: #00d4ff; font-weight: 600;">{{ sector }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <h3 class="card-title">🏢 Entreprises Populaires</h3>
+    <div class="quick-links" style="margin-top: 1rem;">
+        <a href="/analyze?ticker=MSFT" class="quick-link">Microsoft (MSFT)</a>
+        <a href="/analyze?ticker=AAPL" class="quick-link">Apple (AAPL)</a>
+        <a href="/analyze?ticker=GOOGL" class="quick-link">Google (GOOGL)</a>
+        <a href="/analyze?ticker=AMZN" class="quick-link">Amazon (AMZN)</a>
+        <a href="/analyze?ticker=META" class="quick-link">Meta (META)</a>
+        <a href="/analyze?ticker=NVDA" class="quick-link">NVIDIA (NVDA)</a>
+        <a href="/analyze?ticker=TSLA" class="quick-link">Tesla (TSLA)</a>
+        <a href="/analyze?ticker=JPM" class="quick-link">JPMorgan (JPM)</a>
+        <a href="/analyze?ticker=GS" class="quick-link">Goldman Sachs (GS)</a>
+        <a href="/analyze?ticker=V" class="quick-link">Visa (V)</a>
+        <a href="/analyze?ticker=MA" class="quick-link">Mastercard (MA)</a>
+        <a href="/analyze?ticker=UNH" class="quick-link">UnitedHealth (UNH)</a>
+        <a href="/analyze?ticker=LLY" class="quick-link">Eli Lilly (LLY)</a>
+        <a href="/analyze?ticker=JNJ" class="quick-link">Johnson & Johnson (JNJ)</a>
+        <a href="/analyze?ticker=XOM" class="quick-link">Exxon (XOM)</a>
+        <a href="/analyze?ticker=WMT" class="quick-link">Walmart (WMT)</a>
+        <a href="/analyze?ticker=PG" class="quick-link">P&G (PG)</a>
+        <a href="/analyze?ticker=KO" class="quick-link">Coca-Cola (KO)</a>
+        <a href="/analyze?ticker=NFLX" class="quick-link">Netflix (NFLX)</a>
+        <a href="/analyze?ticker=DIS" class="quick-link">Disney (DIS)</a>
+        <a href="/analyze?ticker=HD" class="quick-link">Home Depot (HD)</a>
+        <a href="/analyze?ticker=NKE" class="quick-link">Nike (NKE)</a>
+        <a href="/analyze?ticker=BA" class="quick-link">Boeing (BA)</a>
+        <a href="/analyze?ticker=CAT" class="quick-link">Caterpillar (CAT)</a>
+        <a href="/analyze?ticker=AMD" class="quick-link">AMD</a>
+        <a href="/analyze?ticker=INTC" class="quick-link">Intel</a>
+        <a href="/analyze?ticker=QCOM" class="quick-link">QUALCOMM</a>
+        <a href="/analyze?ticker=ORCL" class="quick-link">Oracle</a>
+        <a href="/analyze?ticker=CRM" class="quick-link">Salesforce</a>
+        <a href="/analyze?ticker=ADBE" class="quick-link">Adobe</a>
+        <a href="/analyze?ticker=PYPL" class="quick-link">PayPal</a>
+        <a href="/analyze?ticker=UBER" class="quick-link">Uber</a>
+        <a href="/analyze?ticker=ABNB" class="quick-link">Airbnb</a>
+        <a href="/analyze?ticker=COIN" class="quick-link">Coinbase</a>
+        <a href="/analyze?ticker=BABA" class="quick-link">Alibaba</a>
+        <a href="/analyze?ticker=ASML" class="quick-link">ASML</a>
+        <a href="/analyze?ticker=TSM" class="quick-link">TSMC</a>
+        <a href="/analyze?ticker=NVO" class="quick-link">Novo Nordisk</a>
+        <a href="/analyze?ticker=TM" class="quick-link">Toyota</a>
+        <a href="/analyze?ticker=SNOW" class="quick-link">Snowflake</a>
+        <a href="/analyze?ticker=CRWD" class="quick-link">CrowdStrike</a>
+        <a href="/analyze?ticker=NOW" class="quick-link">ServiceNow</a>
+        <a href="/analyze?ticker=PLTR" class="quick-link">Palantir</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Bibliothèque d'Analyses{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">📚 Bibliothèque d'Analyses</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_companies or 0 }}</div>
+        <div class="stat-label">Entreprises</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_analyses or 0 }}</div>
+        <div class="stat-label">Analyses Totales</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.recommendations.get('Achat', 0) + stats.recommendations.get('Achat Fort', 0) }}</div>
+        <div class="stat-label">Achat</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.recommendations.get('Neutre', 0) }}</div>
+        <div class="stat-label">Neutre</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.recommendations.get('Vente', 0) + stats.recommendations.get('Vente Forte', 0) }}</div>
+        <div class="stat-label">Vente</div>
+    </div>
+</div>
+
+{% if stats.recommendations %}
+<div class="card">
+    <h3 class="card-title">📊 Répartition des Recommandations</h3>
+    <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+        {% for rec, count in stats.recommendations.items() %}
+        <div style="background: rgba(255,255,255,0.05); padding: 1rem 1.5rem; border-radius: 8px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: 700;">
+                {% if 'Achat' in rec %}{{ count }}{% elif 'Neutre' in rec %}{{ count }}{% else %}{{ count }}{% endif %}
+            </div>
+            <div style="color: #666; font-size: 0.9rem;">{{ rec }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">📈 Toutes les Analyses</h2>
+        <a href="/analyze" class="btn btn-primary">+ Nouvelle Analyse</a>
+    </div>
+    
+    {% if analyses %}
+    <table class="stock-table">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Entreprise</th>
+                <th>Prix</th>
+                <th>P/E</th>
+                <th>PEG</th>
+                <th>Dette/E</th>
+                <th>Score</th>
+                <th>Recommandation</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ind in analyses %}
+            <tr>
+                <td><strong>{{ ind.ticker }}</strong></td>
+                <td>{{ ind.company_name[:25] }}{% if ind.company_name|length > 25 %}...{% endif %}</td>
+                <td>${{ "%.2f"|format(ind.current_price) }}</td>
+                <td>{{ "%.1f"|format(ind.price_to_earnings) if ind.price_to_earnings else "N/A" }}</td>
+                <td>{{ "%.2f"|format(ind.peg_ratio) if ind.peg_ratio else "N/A" }}</td>
+                <td>{{ "%.1f"|format(ind.debt_to_equity) if ind.debt_to_equity else "N/A" }}</td>
+                <td>
+                    <span class="score {% if ind.get_overall_score() >= 60 %}score-high{% elif ind.get_overall_score() >= 40 %}score-medium{% else %}score-low{% endif %}">
+                        {{ "%.1f"|format(ind.get_overall_score()) }}
+                    </span>
+                </td>
+                <td>
+                    {% set rec = ind.get_recommendation() %}
+                    <span class="badge {% if 'Achat' in rec %}badge-buy{% elif 'Neutre' in rec %}badge-hold{% else %}badge-sell{% endif %}">
+                        {{ rec }}
+                    </span>
+                </td>
+                <td>{{ ind.timestamp.strftime('%d/%m/%Y') }}</td>
+                <td>
+                    <a href="/result/{{ ind.ticker }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Voir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #666;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+        <p>Aucune analyse en bibliothèque</p>
+        <p style="margin-top: 0.5rem;">Lancez votre première analyse!</p>
+        <a href="/analyze" class="btn btn-primary" style="margin-top: 1rem;">Commencer</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
