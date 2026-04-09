@@ -34,7 +34,7 @@
                 <td>{{ r.sector or 'N/A' }}</td>
                 <td>{{ r.industry or 'N/A' }}</td>
                 <td>
-                    <a href="/analyze" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                    <a href="/analyze?ticker={{ r.ticker }}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                         Analyser
                     </a>
                 </td>

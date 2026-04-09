@@ -17,7 +17,7 @@
     <form method="POST">
         <div class="search-container">
             <span class="search-icon">🔍</span>
-            <input type="text" name="ticker" class="search-input" placeholder="Ticker ou nom (ex: MSFT, Apple, NVIDIA, SPY...)" required>
+            <input type="text" name="ticker" class="search-input" placeholder="Ticker ou nom (ex: MSFT, Apple, NVIDIA, SPY...)" value="{{ request.args.get('ticker', '') }}" required>
         </div>
         <div style="text-align: center; margin-top: 1rem;">
             <button type="submit" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">Lancer l'analyse</button>
