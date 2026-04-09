@@ -230,7 +230,16 @@
             transition: all 0.3s ease;
         }
         
-        .news-card:hover {
+        .news-card-link {
+            text-decoration: none;
+            display: block;
+        }
+        
+        .news-card-link .news-card {
+            height: 100%;
+        }
+        
+        .news-card-link:hover .news-card {
             transform: translateY(-4px);
             border-color: rgba(0, 212, 255, 0.3);
             box-shadow: var(--card-shadow);
