@@ -3,10 +3,45 @@ import yfinance as yf
 from datetime import datetime
 import json
 import os
+import random
 
 app = Flask(__name__)
 
 DATA_FILE = 'data.json'
+
+NEWS_SOURCES = [
+    {'name': 'Reuters', 'url': 'https://www.reuters.com'},
+    {'name': 'Bloomberg', 'url': 'https://www.bloomberg.com'},
+    {'name': 'CNBC', 'url': 'https://www.cnbc.com'},
+    {'name': 'Yahoo Finance', 'url': 'https://finance.yahoo.com'},
+    {'name': 'MarketWatch', 'url': 'https://www.marketwatch.com'},
+]
+
+def get_market_news():
+    try:
+        tickers_news = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'JPM']
+        random_tickers = random.sample(tickers_news, 4)
+        all_news = []
+        
+        for ticker in random_tickers:
+            try:
+                stock = yf.Ticker(ticker)
+                news = stock.news
+                if news:
+                    for item in news[:2]:
+                        all_news.append({
+                            'title': item.get('title', ''),
+                            'url': item.get('link', item.get('canonicalUrl', '')),
+                            'publisher': item.get('publisher', 'Yahoo Finance'),
+                            'ticker': ticker
+                        })
+            except:
+                pass
+        
+        random.shuffle(all_news)
+        return all_news[:8]
+    except:
+        return []
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -417,8 +452,11 @@ HOMEPAGE = '''
         .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .news-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; transition: all 0.3s ease; }
         .news-card:hover { transform: translateY(-4px); border-color: rgba(0, 212, 255, 0.3); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4); }
+        .news-card-link { text-decoration: none; display: block; }
+        .news-card-link .news-card { height: 100%; }
+        .news-card-link:hover .news-card { transform: translateY(-4px); border-color: rgba(0, 212, 255, 0.3); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4); }
         .news-image { width: 100%; height: 160px; object-fit: cover; background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); }
-        .news-content { padding: 1.25rem; }
+        .news-content { padding: 1.25rem; min-height: 120px; }
         .news-category { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(0, 212, 255, 0.15); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 600; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
         .news-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.4; }
         .news-title a { color: #fff; text-decoration: none; }
@@ -491,77 +529,32 @@ HOMEPAGE = '''
             <div class="ticker-item"><span class="ticker-symbol">GLD</span><span class="ticker-price">$189.45</span><span class="ticker-change ticker-up">+0.8%</span></div>
         </div>
         
-        <h2 class="section-title">À la une</h2>
-        <div class="featured-news">
-            <article class="featured-card">
-                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80" alt="Bourse" class="featured-image">
-                <div class="featured-overlay">
-                    <span class="featured-category">Marchés</span>
-                    <h3 class="featured-title"><a href="/analyze?ticker=SPY">Les marchés actions atteignent de nouveaux records historiques</a></h3>
-                    <p class="featured-meta">Il y a 2 heures • Bloomberg</p>
-                </div>
-            </article>
-            <article class="featured-card">
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Tech" class="featured-image">
-                <div class="featured-overlay">
-                    <span class="featured-category">Technologie</span>
-                    <h3 class="featured-title"><a href="/analyze?ticker=NVDA">L'IA pousse NVIDIA vers les 900 milliards de capitalisation</a></h3>
-                    <p class="featured-meta">Il y a 4 heures • Reuters</p>
-                </div>
-            </article>
+        <h2 class="section-title">Actualités Financières</h2>
+        {% if news and news|length > 0 %}
+        <div class="news-grid">
+            {% for item in news[:8] %}
+            <a href="{{ item.url }}" target="_blank" class="news-card-link">
+                <article class="news-card">
+                    <div class="news-content">
+                        <span class="news-category">{{ item.ticker }}</span>
+                        <h3 class="news-title">{{ item.title }}</h3>
+                        <p class="news-meta">{{ item.publisher }}</p>
+                    </div>
+                </article>
+            </a>
+            {% endfor %}
         </div>
-        
-        <h2 class="section-title">Actualités du jour</h2>
+        {% else %}
         <div class="news-grid">
             <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&q=80" alt="Fed" class="news-image">
                 <div class="news-content">
-                    <span class="news-category">Macro</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=VTI">La Fed maintient ses taux, les marchés positifs</a></h3>
-                    <p class="news-meta">Il y a 1h • Les Echos</p>
-                </div>
-            </article>
-            <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=400&q=80" alt="Crypto" class="news-image">
-                <div class="news-content">
-                    <span class="news-category">Crypto</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=MSTR">Bitcoin dépasse les 70 000$ sur fond d'intérêt institutionnel</a></h3>
-                    <p class="news-meta">Il y a 2h • CoinDesk</p>
-                </div>
-            </article>
-            <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80" alt="Energy" class="news-image">
-                <div class="news-content">
-                    <span class="news-category">Énergie</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=USO">Le brut Brent stable à $85 le baril</a></h3>
-                    <p class="news-meta">Il y a 3h • AFP</p>
-                </div>
-            </article>
-            <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1565514020176-0223a8e73e48?w=400&q=80" alt="Tech" class="news-image">
-                <div class="news-content">
-                    <span class="news-category">Technologie</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=AAPL">Apple présente ses nouvelles innovations</a></h3>
-                    <p class="news-meta">Il y a 5h • WSJ</p>
-                </div>
-            </article>
-            <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&q=80" alt="Finance" class="news-image">
-                <div class="news-content">
-                    <span class="news-category">Finance</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=JPM">JPMorgan dépasse les attentes au T1</a></h3>
-                    <p class="news-meta">Il y a 6h • Bloomberg</p>
-                </div>
-            </article>
-            <article class="news-card">
-                <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&q=80" alt="Europe" class="news-image">
-                <div class="news-content">
-                    <span class="news-category">Europe</span>
-                    <h3 class="news-title"><a href="/analyze?ticker=VGK">Le CAC 40 progresse de 0.8%</a></h3>
-                    <p class="news-meta">Il y a 7h • Le Monde</p>
+                    <span class="news-category">Marchés</span>
+                    <h3 class="news-title">Les marchés actions continuent leur hausse</h3>
+                    <p class="news-meta">Actualités en cours de chargement...</p>
                 </div>
             </article>
         </div>
+        {% endif %}
         
         <div class="stats-grid">
             <div class="stat-card"><div class="stat-value">150+</div><div class="stat-label">Actions</div></div>
@@ -802,7 +795,8 @@ SIMPLE_PAGE = '''
 
 @app.route('/')
 def home():
-    return render_template_string(HOMEPAGE)
+    news = get_market_news()
+    return render_template_string(HOMEPAGE, news=news)
 
 @app.route('/analyze')
 def analyze():
