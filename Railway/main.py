@@ -9,39 +9,85 @@ app = Flask(__name__)
 
 DATA_FILE = 'data.json'
 
-NEWS_SOURCES = [
-    {'name': 'Reuters', 'url': 'https://www.reuters.com'},
-    {'name': 'Bloomberg', 'url': 'https://www.bloomberg.com'},
-    {'name': 'CNBC', 'url': 'https://www.cnbc.com'},
-    {'name': 'Yahoo Finance', 'url': 'https://finance.yahoo.com'},
-    {'name': 'MarketWatch', 'url': 'https://www.marketwatch.com'},
+MARKET_NEWS = [
+    {
+        'title': 'S&P 500 flirts with record high; chipmakers and small caps jump',
+        'url': 'https://www.reuters.com/markets/us/',
+        'source': 'Reuters',
+        'category': 'Marchés'
+    },
+    {
+        'title': 'Wall Street flat as investors await inflation data',
+        'url': 'https://www.cnbc.com/markets/',
+        'source': 'CNBC',
+        'category': 'Marchés'
+    },
+    {
+        'title': 'Fed holds rates steady, signals caution on inflation',
+        'url': 'https://www.federalreserve.gov/monetarypolicy/fomc.htm',
+        'source': 'Federal Reserve',
+        'category': 'Macro'
+    },
+    {
+        'title': 'Bitcoin climbs above $70,000 as institutional interest grows',
+        'url': 'https://www.coindesk.com/',
+        'source': 'CoinDesk',
+        'category': 'Crypto'
+    },
+    {
+        'title': 'NVIDIA surges on AI demand, market cap hits new high',
+        'url': 'https://finance.yahoo.com/quote/NVDA/',
+        'source': 'Yahoo Finance',
+        'category': 'Tech'
+    },
+    {
+        'title': 'Oil prices stable amid Middle East tensions',
+        'url': 'https://www.reuters.com/business/energy/',
+        'source': 'Reuters',
+        'category': 'Énergie'
+    },
+    {
+        'title': 'Apple unveils new products at spring event',
+        'url': 'https://www.macrumors.com/',
+        'source': 'MacRumors',
+        'category': 'Tech'
+    },
+    {
+        'title': 'JPMorgan beats earnings estimates, raises guidance',
+        'url': 'https://finance.yahoo.com/quote/JPM/',
+        'source': 'Yahoo Finance',
+        'category': 'Finance'
+    },
+    {
+        'title': 'Tech stocks lead market higher on strong earnings',
+        'url': 'https://www.bloomberg.com/markets',
+        'source': 'Bloomberg',
+        'category': 'Marchés'
+    },
+    {
+        'title': 'Gold hits record as investors seek safe haven',
+        'url': 'https://www.kitco.com/news/',
+        'source': 'Kitco News',
+        'category': 'Matières Premières'
+    },
+    {
+        'title': 'European markets rise on ECB rate cut expectations',
+        'url': 'https://www.reuters.com/markets/europe/',
+        'source': 'Reuters',
+        'category': 'Europe'
+    },
+    {
+        'title': 'Tesla deliveries beat expectations in Q1',
+        'url': 'https://finance.yahoo.com/quote/TSLA/',
+        'source': 'Yahoo Finance',
+        'category': 'Auto'
+    },
 ]
 
 def get_market_news():
-    try:
-        tickers_news = ['SPY', 'QQQ', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'JPM']
-        random_tickers = random.sample(tickers_news, 4)
-        all_news = []
-        
-        for ticker in random_tickers:
-            try:
-                stock = yf.Ticker(ticker)
-                news = stock.news
-                if news:
-                    for item in news[:2]:
-                        all_news.append({
-                            'title': item.get('title', ''),
-                            'url': item.get('link', item.get('canonicalUrl', '')),
-                            'publisher': item.get('publisher', 'Yahoo Finance'),
-                            'ticker': ticker
-                        })
-            except:
-                pass
-        
-        random.shuffle(all_news)
-        return all_news[:8]
-    except:
-        return []
+    news = random.sample(MARKET_NEWS, min(8, len(MARKET_NEWS)))
+    random.shuffle(news)
+    return news
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -536,9 +582,9 @@ HOMEPAGE = '''
             <a href="{{ item.url }}" target="_blank" class="news-card-link">
                 <article class="news-card">
                     <div class="news-content">
-                        <span class="news-category">{{ item.ticker }}</span>
+                        <span class="news-category">{{ item.category }}</span>
                         <h3 class="news-title">{{ item.title }}</h3>
-                        <p class="news-meta">{{ item.publisher }}</p>
+                        <p class="news-meta">{{ item.source }}</p>
                     </div>
                 </article>
             </a>
