@@ -497,7 +497,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80" alt="Bourse" class="featured-image">
                 <div class="featured-overlay">
                     <span class="featured-category">Marchés</span>
-                    <h3 class="featured-title"><a href="#">Les marchés actions atteignent de nouveaux records historiques</a></h3>
+                    <h3 class="featured-title"><a href="/analyze?ticker=SPY">Les marchés actions atteignent de nouveaux records historiques</a></h3>
                     <p class="featured-meta">Il y a 2 heures • Bloomberg</p>
                 </div>
             </article>
@@ -505,7 +505,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Tech" class="featured-image">
                 <div class="featured-overlay">
                     <span class="featured-category">Technologie</span>
-                    <h3 class="featured-title"><a href="#">L'IA pousse NVIDIA vers les 900 milliards de capitalisation</a></h3>
+                    <h3 class="featured-title"><a href="/analyze?ticker=NVDA">L'IA pousse NVIDIA vers les 900 milliards de capitalisation</a></h3>
                     <p class="featured-meta">Il y a 4 heures • Reuters</p>
                 </div>
             </article>
@@ -517,7 +517,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&q=80" alt="Fed" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Macro</span>
-                    <h3 class="news-title"><a href="#">La Fed maintient ses taux, les marchés positifs</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=VTI">La Fed maintient ses taux, les marchés positifs</a></h3>
                     <p class="news-meta">Il y a 1h • Les Echos</p>
                 </div>
             </article>
@@ -525,7 +525,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=400&q=80" alt="Crypto" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Crypto</span>
-                    <h3 class="news-title"><a href="#">Bitcoin dépasse les 70 000$ sur fond d'intérêt institutionnel</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=MSTR">Bitcoin dépasse les 70 000$ sur fond d'intérêt institutionnel</a></h3>
                     <p class="news-meta">Il y a 2h • CoinDesk</p>
                 </div>
             </article>
@@ -533,7 +533,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80" alt="Energy" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Énergie</span>
-                    <h3 class="news-title"><a href="#">Le brut Brent stable à $85 le baril</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=USO">Le brut Brent stable à $85 le baril</a></h3>
                     <p class="news-meta">Il y a 3h • AFP</p>
                 </div>
             </article>
@@ -541,7 +541,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1565514020176-0223a8e73e48?w=400&q=80" alt="Tech" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Technologie</span>
-                    <h3 class="news-title"><a href="#">Apple présente ses nouvelles innovations</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=AAPL">Apple présente ses nouvelles innovations</a></h3>
                     <p class="news-meta">Il y a 5h • WSJ</p>
                 </div>
             </article>
@@ -549,7 +549,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&q=80" alt="Finance" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Finance</span>
-                    <h3 class="news-title"><a href="#">JPMorgan dépasse les attentes au T1</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=JPM">JPMorgan dépasse les attentes au T1</a></h3>
                     <p class="news-meta">Il y a 6h • Bloomberg</p>
                 </div>
             </article>
@@ -557,7 +557,7 @@ HOMEPAGE = '''
                 <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&q=80" alt="Europe" class="news-image">
                 <div class="news-content">
                     <span class="news-category">Europe</span>
-                    <h3 class="news-title"><a href="#">Le CAC 40 progresse de 0.8%</a></h3>
+                    <h3 class="news-title"><a href="/analyze?ticker=VGK">Le CAC 40 progresse de 0.8%</a></h3>
                     <p class="news-meta">Il y a 7h • Le Monde</p>
                 </div>
             </article>
